@@ -8,10 +8,10 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisities
 
-Python 3
-OpenCV
-NumPy
-imutils
+* Python 3
+* OpenCV
+* NumPy
+* imutils
 
 ### Installing
 To install the libraries, run the following commands:
