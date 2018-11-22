@@ -15,10 +15,12 @@ imutils
 
 ### Installing
 To install the libraries, run the following commands:
-`$ brew install python3`
-`$ pip install opencv-python`
-`$ pip install numpy`
-`$ pip install imutils`
+```
+$ brew install python3
+$ pip install opencv-python
+$ pip install numpy
+$ pip install imutils
+```
 
 ## Running
 
