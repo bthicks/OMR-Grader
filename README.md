@@ -15,14 +15,14 @@ imutils
 
 ### Installing
 To install the libraries, run the following commands:
-> $ brew install python3
-> $ pip install opencv-python
-> $ pip install numpy
-> $ pip install imutils
+'$ brew install python3'
+'$ pip install opencv-python'
+'$ pip install numpy'
+'$ pip install imutils'
 
 ## Running
 
-> $ python grader.py --image [path to image]
+'$ python grader.py --image [path to image]'
 
 ## Acknowledgements
 Adrian Rosebrock's OMR tutorial "Bubble sheet multiple choice scanner and test grader using OMR, Python, OpenCV"
