@@ -9,7 +9,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisities
 
 * Python 3
-* OpenCV
+* OpenCV 3.4.3 or later
 * NumPy
 * imutils
 
@@ -28,3 +28,4 @@ $ pip install imutils
 
 ## Acknowledgements
 Adrian Rosebrock's OMR tutorial "Bubble sheet multiple choice scanner and test grader using OMR, Python, OpenCV"
+Daniel Van Beurden
