@@ -59,14 +59,13 @@ idBox = four_point_transform(threshold, approx.reshape(4, 2))
 
 # find bubbles in question box
 _, contours, _ = cv.findContours(questionBox, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-contours = contours[::2]
 questionContours = []
 
 for contour in contours:
 	(x, y, w, h) = cv.boundingRect(contour)
 	aspectRatio = w / float(h)
 
-	if w >= 20 and h >= 20 and aspectRatio >= 0.9 and aspectRatio <= 1.1:
+	if w >= 45 and h >= 45 and aspectRatio >= 0.9 and aspectRatio <= 1.1:
 		questionContours.append(contour)
 
 # grade bubbles in question box
@@ -117,7 +116,7 @@ for (question, i) in enumerate(np.arange(0, len(column2), 5)):
 
 	questionsMarked.append(bubbled)
 
-print("q", questionsMarked)
+print("answers", questionsMarked)
 
 # find bubbles in version box
 _, contours, _ = cv.findContours(versionBox, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -184,8 +183,3 @@ print("id", idMarked)
 
 data = {"Student ID" : idMarked, "Version" : versionMarked, "Answers" : questionsMarked}
 jsonData = json.dumps(data)
-
-print(jsonData)
-
-
-
