@@ -82,7 +82,7 @@ column1, _ = cutils.sort_contours(column1, method="top-to-bottom")
 # each field has 5 bubbles so loop in batches of 5
 for (question, i) in enumerate(np.arange(0, len(column1), 5)):
 	contours, _ = cutils.sort_contours(column1[i:i + 5])
-	bubbled = []
+	bubbled = ""
 
 	for (j, c) in enumerate(contours):
 		mask = np.zeros(questionBox.shape, dtype="uint8")
@@ -92,17 +92,17 @@ for (question, i) in enumerate(np.arange(0, len(column1), 5)):
 
 		# if ~50% bubbled, count as marked
 		if total > 1000:
-			bubbled.append(j)
+			bubbled += str(chr(j + 65))
 
 	questionsMarked.append(bubbled)
 
-# grade questions 1-50
+# grade questions 26-50
 column2, _ = cutils.sort_contours(column2, method="top-to-bottom")
 
 # each field has 5 bubbles so loop in batches of 5
 for (question, i) in enumerate(np.arange(0, len(column2), 5)):
 	contours, _ = cutils.sort_contours(column2[i:i + 5])
-	bubbled = []
+	bubbled = ""
 
 	for (j, c) in enumerate(contours):
 		mask = np.zeros(questionBox.shape, dtype="uint8")
@@ -112,7 +112,7 @@ for (question, i) in enumerate(np.arange(0, len(column2), 5)):
 
 		# if ~50% bubbled count as marked
 		if total > 1000:
-			bubbled.append(j)
+			bubbled += str(chr(j + 65))
 
 	questionsMarked.append(bubbled)
 
@@ -159,7 +159,7 @@ for contour in contours:
 
 # grade bubbles in id box
 idContours, _ = cutils.sort_contours(idContours, method="left-to-right")
-idMarked = []
+idMarked = ""
 
 # each field has 10 possibilities so loop in batches of 10
 for (q, i) in enumerate(np.arange(0, len(idContours), 10)):
@@ -177,7 +177,7 @@ for (q, i) in enumerate(np.arange(0, len(idContours), 10)):
 			bubbled = j
 			maxCount = total
 
-	idMarked.append(bubbled)
+	idMarked += str(bubbled)
 
 print("id", idMarked)
 
