@@ -92,7 +92,7 @@ for (question, i) in enumerate(np.arange(0, len(column1), 5)):
 
 		# if ~50% bubbled, count as marked
 		if total > 1000:
-			bubbled += str(chr(j + 65))
+			bubbled += chr(j + 65)
 
 	questionsMarked.append(bubbled)
 
@@ -112,7 +112,7 @@ for (question, i) in enumerate(np.arange(0, len(column2), 5)):
 
 		# if ~50% bubbled count as marked
 		if total > 1000:
-			bubbled += str(chr(j + 65))
+			bubbled += chr(j + 65)
 
 	questionsMarked.append(bubbled)
 
@@ -141,7 +141,7 @@ for (j, c) in enumerate(versionContours):
 	total = cv.countNonZero(mask)
 
 	if versionMarked is None or total > maxCount:
-		versionMarked = j
+		versionMarked = chr(j + 65)
 		maxCount = total
 
 print("version", versionMarked)
