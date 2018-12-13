@@ -106,6 +106,7 @@ for (question, i) in enumerate(np.arange(0, len(column1), 5)):
 
 	for (j, c) in enumerate(contours):
 		mask = np.zeros(questionBox.shape, dtype="uint8")
+		cv.drawContours(mask, [c], -1, 255, -1)
 		mask = cv.bitwise_and(questionBox, questionBox, mask=mask)
 		total = cv.countNonZero(mask)
 
@@ -125,6 +126,7 @@ for (question, i) in enumerate(np.arange(0, len(column2), 5)):
 
 	for (j, c) in enumerate(contours):
 		mask = np.zeros(questionBox.shape, dtype="uint8")
+		cv.drawContours(mask, [c], -1, 255, -1)
 		mask = cv.bitwise_and(questionBox, questionBox, mask=mask)
 		total = cv.countNonZero(mask)
 
