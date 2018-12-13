@@ -5,6 +5,7 @@ import argparse
 import imutils
 import cv2 as cv
 import json
+import base64
 
 # parse the arguments
 ap = argparse.ArgumentParser()
@@ -95,6 +96,7 @@ mid = int(len(questionContours) / 2)
 column1 = questionContours[0 : mid]
 column2 = questionContours[mid : length]
 questionsMarked = []
+vagueQuestions = []
 
 # grade questions 1-25
 column1, _ = cutils.sort_contours(column1, method="top-to-bottom")
@@ -111,8 +113,14 @@ for (question, i) in enumerate(np.arange(0, len(column1), 5)):
 		total = cv.countNonZero(mask)
 
 		# if ~50% bubbled, count as marked
-		if total > 1000:
+		if total > 1700:
+			print(question + 1, ":", bubbled, total)
 			bubbled += chr(j + 65)
+		# count as unsure	
+		elif total > 1000:
+			bubbled = '?'
+			vagueQuestions.append(question + 1)
+			break
 
 	questionsMarked.append(bubbled)
 
@@ -131,12 +139,19 @@ for (question, i) in enumerate(np.arange(0, len(column2), 5)):
 		total = cv.countNonZero(mask)
 
 		# if ~50% bubbled count as marked
-		if total > 1000:
+		if total > 1700:
+			print(question + 26, ":", bubbled, total)
 			bubbled += chr(j + 65)
+		# count as unsure
+		elif total > 1000:
+			bubbled = '?'
+			vagueQuestions.append(question + 26)
+			break;
 
 	questionsMarked.append(bubbled)
 
 print("answers", questionsMarked)
+print("unsure", vagueQuestions)
 
 # find bubbles in version box
 _, contours, _ = cv.findContours(versionBox, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -201,5 +216,27 @@ for (q, i) in enumerate(np.arange(0, len(idContours), 10)):
 
 print("id", idMarked)
 
-data = {"Student ID" : idMarked, "Version" : versionMarked, "Answers" : questionsMarked}
+vagueImages = []
+
+# crop image slices for unsure questions
+for question in vagueQuestions:
+	if question >= 1 and question <= 25:
+		cropped = page[(940 + 67 * (question - 1)):(1010 + 67 * (question - 1)), 150:650]
+		vagueImages.append(cropped)
+	elif question >= 26 and question <= 50:
+		cropped = page[(940 + 67 * (question - 26)):(1010 + 67 * (question - 26)), 675:1175]
+		vagueImages.append(cropped)
+
+for img in vagueImages:
+	cv.imshow("img", img)
+	cv.waitKey()
+
+# encode image slices into base64
+encodedImages = []
+for img in vagueImages:
+	_, binary = cv.imencode('.png', img)
+	encoded = base64.b64encode(binary)
+	encodedImages.append(encoded.decode("utf-8"))
+
+data = {"Student ID" : idMarked, "Version" : versionMarked, "Answers" : questionsMarked, "Unsure" : vagueQuestions, "Images" : encodedImages}
 jsonData = json.dumps(data)
