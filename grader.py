@@ -17,13 +17,17 @@ if im is None:
 	print('Could not find the image:', args["image"])
 	exit(0)
 
+# for debugging
+cv.namedWindow(args["image"], cv.WINDOW_NORMAL)
+cv.resizeWindow(args["image"], 850, 1100)
+
 imgray = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
 blurred = cv.GaussianBlur(imgray.copy(), (5, 5), 0)
 edged = cv.Canny(blurred, 75, 200)
 
 # find contour for entire page
 _, contours, _ = cv.findContours(edged, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-contours = sorted(contours, key=cv2.contourArea, reverse=True)
+contours = sorted(contours, key=cv.contourArea, reverse=True)
 page = None
 
 if len(contours) > 0:
@@ -35,7 +39,6 @@ if len(contours) > 0:
 		# verify that contour has four corners
 		if len(approx) == 4:
 			page = approx
-			print("here")
 			break
 		
 else:
@@ -66,11 +69,26 @@ idBox = four_point_transform(threshold, approx.reshape(4, 2))
 _, contours, _ = cv.findContours(questionBox, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 questionContours = []
 
+def inBounds(x, y):
+	if y >= 70 and y <= 1745:
+		# within left column bounds
+		if x >= 180 and x <= 500:
+			return True
+		# within right column bounds
+		#elif x >= 705 and x <= 1015:
+		elif x >= 705 and x <= 1045:
+			return True
+		else:
+			return False
+	else:
+		return False 
+
 for contour in contours:
 	(x, y, w, h) = cv.boundingRect(contour)
 	aspectRatio = w / float(h)
 
-	if w >= 45 and h >= 45 and aspectRatio >= 0.9 and aspectRatio <= 1.1:
+	#if w >= 45 and h >= 45 and aspectRatio >= 0.9 and aspectRatio <= 1.1:
+	if w >= 45 and h >= 45 and inBounds(x, y):
 		questionContours.append(contour)
 
 # grade bubbles in question box
@@ -80,6 +98,12 @@ mid = int(len(questionContours) / 2)
 column1 = questionContours[0 : mid]
 column2 = questionContours[mid : length]
 questionsMarked = []
+print(len(column1))
+print(len(column2))
+
+cv.drawContours(page, questionContours, -1, (0,255,0), 3)
+cv.imshow(args["image"], page)
+cv.waitKey()
 
 # grade questions 1-25
 column1, _ = cutils.sort_contours(column1, method="top-to-bottom")
