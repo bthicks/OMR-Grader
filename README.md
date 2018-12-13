@@ -22,11 +22,12 @@ $ pip install numpy
 $ pip install imutils
 ```
 
-### Installing on Windows
+### Installing on Windows Subsystem for Linux
 To install the libraries, run the following commands:
 ```
 $ apt install python3
 $ apt install python3-opencv
+$ apt install python3-pip
 $ pip3 install numpy
 $ pip3 install scipy
 $ pip3 install imutils
