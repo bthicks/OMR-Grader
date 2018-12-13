@@ -18,8 +18,8 @@ if im is None:
 	exit(0)
 
 # for debugging
-cv.namedWindow(args["image"], cv.WINDOW_NORMAL)
-cv.resizeWindow(args["image"], 850, 1100)
+#cv.namedWindow(args["image"], cv.WINDOW_NORMAL)
+#cv.resizeWindow(args["image"], 850, 1100)
 
 imgray = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
 blurred = cv.GaussianBlur(imgray.copy(), (5, 5), 0)
@@ -75,7 +75,6 @@ def inBounds(x, y):
 		if x >= 180 and x <= 500:
 			return True
 		# within right column bounds
-		#elif x >= 705 and x <= 1015:
 		elif x >= 705 and x <= 1045:
 			return True
 		else:
@@ -85,9 +84,7 @@ def inBounds(x, y):
 
 for contour in contours:
 	(x, y, w, h) = cv.boundingRect(contour)
-	aspectRatio = w / float(h)
 
-	#if w >= 45 and h >= 45 and aspectRatio >= 0.9 and aspectRatio <= 1.1:
 	if w >= 45 and h >= 45 and inBounds(x, y):
 		questionContours.append(contour)
 
@@ -98,12 +95,6 @@ mid = int(len(questionContours) / 2)
 column1 = questionContours[0 : mid]
 column2 = questionContours[mid : length]
 questionsMarked = []
-print(len(column1))
-print(len(column2))
-
-cv.drawContours(page, questionContours, -1, (0,255,0), 3)
-cv.imshow(args["image"], page)
-cv.waitKey()
 
 # grade questions 1-25
 column1, _ = cutils.sort_contours(column1, method="top-to-bottom")
@@ -115,7 +106,6 @@ for (question, i) in enumerate(np.arange(0, len(column1), 5)):
 
 	for (j, c) in enumerate(contours):
 		mask = np.zeros(questionBox.shape, dtype="uint8")
-		cv.drawContours(mask, [c], -1, 255, -1)
 		mask = cv.bitwise_and(questionBox, questionBox, mask=mask)
 		total = cv.countNonZero(mask)
 
@@ -135,7 +125,6 @@ for (question, i) in enumerate(np.arange(0, len(column2), 5)):
 
 	for (j, c) in enumerate(contours):
 		mask = np.zeros(questionBox.shape, dtype="uint8")
-		cv.drawContours(mask, [c], -1, 255, -1)
 		mask = cv.bitwise_and(questionBox, questionBox, mask=mask)
 		total = cv.countNonZero(mask)
 
