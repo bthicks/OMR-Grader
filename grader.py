@@ -23,16 +23,21 @@ edged = cv.Canny(blurred, 75, 200)
 
 # find contour for entire page
 _, contours, _ = cv.findContours(edged, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+contours = sorted(contours, key=cv2.contourArea, reverse=True)
 page = None
 
 if len(contours) > 0:
 	# approximate the contour
-	peri = cv.arcLength(contours[0], True)
-	approx = cv.approxPolyDP(contours[0], 0.02 * peri, True)
+	for contour in contours:
+		peri = cv.arcLength(contour, True)
+		approx = cv.approxPolyDP(contour, 0.02 * peri, True)
 
-	# verify that contour has four corners
-	if len(approx) == 4:
-		page = approx
+		# verify that contour has four corners
+		if len(approx) == 4:
+			page = approx
+			print("here")
+			break
+		
 else:
 	print('No page found in image:', args["image"])
 	exit(0)
