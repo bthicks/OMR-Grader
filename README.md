@@ -12,6 +12,7 @@ These instructions will get you a copy of the project up and running on your loc
 * OpenCV 3.4.3 or later
 * NumPy
 * imutils
+* SciPy (Windows only)
 
 ### Installing on Mac/Linux
 To install the libraries, run the following commands:
