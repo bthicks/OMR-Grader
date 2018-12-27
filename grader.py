@@ -7,6 +7,49 @@ import cv2 as cv
 import json
 import base64
 
+vagueImages = []
+questionsMarked = []
+vagueQuestions = []
+versionMarked = None
+idMarked = ""
+
+def inBounds(x, y):
+	if 70 <= y <= 1745:
+		# within left column bounds
+		if 180 <= x <= 500:
+			return True
+		# within right column bounds
+		elif 705 <= x <= 1045:
+			return True
+		else:
+			return False
+	else:
+		return False 
+
+def inBoundsVersion(x, y):
+	if 160 <= x <= 475 and 10 <= y <= 20:
+		return True
+	else:
+		return False
+
+def inBoundsID(x, y):
+	if 40 <= x <= 780 and 15 <= y <= 600:
+		return True
+	else:
+		return False
+
+# crop image slice for undetermined questions
+def getImageSlice(questionNum, minY, maxY, offset):
+	
+	diff = int((maxY - minY) / 25)
+
+	if 1 <= questionNum <= 25:
+		return page[(offset + minY + diff * (questionNum - 1)) : (offset + minY + diff * questionNum), 150 : 650]
+	elif 26 <= questionNum <= 50:
+		return page[(offset + minY + diff * (questionNum - 26)) : (offset + minY + diff * (questionNum - 25)), 675 : 1175]
+	else:
+		return None
+
 # parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True, help="path to the input image")
@@ -40,8 +83,7 @@ if len(contours) > 0:
 		# verify that contour has four corners
 		if len(approx) == 4:
 			page = approx
-			break
-		
+			break	
 else:
 	print('No page found in image:', args["image"])
 	exit(0)
@@ -54,6 +96,7 @@ _, threshold = cv.threshold(page, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
 _, contours, _ = cv.findContours(threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 contours = sorted(contours, key=cv.contourArea, reverse=True)
 
+(_, offset, _, _) = cv.boundingRect(contours[2])
 peri = cv.arcLength(contours[2], True)
 approx = cv.approxPolyDP(contours[2], 0.02 * peri, True)
 questionBox = four_point_transform(threshold, approx.reshape(4, 2))
@@ -69,25 +112,18 @@ idBox = four_point_transform(threshold, approx.reshape(4, 2))
 # find bubbles in question box
 _, contours, _ = cv.findContours(questionBox, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 questionContours = []
-
-def inBounds(x, y):
-	if y >= 70 and y <= 1745:
-		# within left column bounds
-		if x >= 180 and x <= 500:
-			return True
-		# within right column bounds
-		elif x >= 705 and x <= 1045:
-			return True
-		else:
-			return False
-	else:
-		return False 
+yValues = []
 
 for contour in contours:
 	(x, y, w, h) = cv.boundingRect(contour)
 
 	if w >= 45 and h >= 45 and inBounds(x, y):
 		questionContours.append(contour)
+		tup = (y, h)
+		yValues.append(tup)
+
+minY = yValues[len(yValues) - 1][0]
+maxY = yValues[0][0] + yValues[0][1]
 
 # grade bubbles in question box
 questionContours, _ = cutils.sort_contours(questionContours, method="left-to-right")
@@ -95,8 +131,6 @@ length = len(questionContours)
 mid = int(len(questionContours) / 2)
 column1 = questionContours[0 : mid]
 column2 = questionContours[mid : length]
-questionsMarked = []
-vagueQuestions = []
 
 # grade questions 1-25
 column1, _ = cutils.sort_contours(column1, method="top-to-bottom")
@@ -114,12 +148,12 @@ for (question, i) in enumerate(np.arange(0, len(column1), 5)):
 
 		# if ~50% bubbled, count as marked
 		if total > 1700:
-			print(question + 1, ":", bubbled, total)
 			bubbled += chr(j + 65)
 		# count as unsure	
 		elif total > 1000:
 			bubbled = '?'
 			vagueQuestions.append(question + 1)
+			vagueImages.append(getImageSlice(question + 1, minY, maxY, offset))
 			break
 
 	questionsMarked.append(bubbled)
@@ -140,18 +174,15 @@ for (question, i) in enumerate(np.arange(0, len(column2), 5)):
 
 		# if ~50% bubbled count as marked
 		if total > 1700:
-			print(question + 26, ":", bubbled, total)
 			bubbled += chr(j + 65)
 		# count as unsure
 		elif total > 1000:
 			bubbled = '?'
 			vagueQuestions.append(question + 26)
+			vagueImages.append(getImageSlice(question + 26, minY, maxY, offset))
 			break;
 
 	questionsMarked.append(bubbled)
-
-print("answers", questionsMarked)
-print("unsure", vagueQuestions)
 
 # find bubbles in version box
 _, contours, _ = cv.findContours(versionBox, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -166,7 +197,6 @@ for contour in contours:
 
 # grade bubbles in version box
 versionContours, _ = cutils.sort_contours(versionContours, method="left-to-right")
-versionMarked = None
 maxCount = None
 
 for (j, c) in enumerate(versionContours):
@@ -179,8 +209,6 @@ for (j, c) in enumerate(versionContours):
 		versionMarked = chr(j + 65)
 		maxCount = total
 
-print("version", versionMarked)
-
 # find bubbles in id box
 _, contours, _ = cv.findContours(idBox, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 idContours = []
@@ -189,12 +217,11 @@ for contour in contours:
 	(x, y, w, h) = cv.boundingRect(contour)
 	aspectRatio = w / float(h)
 
-	if w >= 45 and h >= 45 and aspectRatio >= 0.9 and aspectRatio <= 1.1:
+	if w >= 45 and h >= 45 and aspectRatio >= 0.9 and aspectRatio <= 1.1 and inBoundsID(x, y):
 		idContours.append(contour)
 
 # grade bubbles in id box
 idContours, _ = cutils.sort_contours(idContours, method="left-to-right")
-idMarked = ""
 
 # each field has 10 possibilities so loop in batches of 10
 for (q, i) in enumerate(np.arange(0, len(idContours), 10)):
@@ -214,23 +241,6 @@ for (q, i) in enumerate(np.arange(0, len(idContours), 10)):
 
 	idMarked += str(bubbled)
 
-print("id", idMarked)
-
-vagueImages = []
-
-# crop image slices for unsure questions
-for question in vagueQuestions:
-	if question >= 1 and question <= 25:
-		cropped = page[(940 + 67 * (question - 1)):(1010 + 67 * (question - 1)), 150:650]
-		vagueImages.append(cropped)
-	elif question >= 26 and question <= 50:
-		cropped = page[(940 + 67 * (question - 26)):(1010 + 67 * (question - 26)), 675:1175]
-		vagueImages.append(cropped)
-
-for img in vagueImages:
-	cv.imshow("img", img)
-	cv.waitKey()
-
 # encode image slices into base64
 encodedImages = []
 for img in vagueImages:
@@ -240,3 +250,13 @@ for img in vagueImages:
 
 data = {"Student ID" : idMarked, "Version" : versionMarked, "Answers" : questionsMarked, "Unsure" : vagueQuestions, "Images" : encodedImages}
 jsonData = json.dumps(data)
+
+# for debugging
+for img in vagueImages:
+	cv.imshow("img", img)
+	cv.waitKey()
+
+print("answers", questionsMarked)
+print("unsure", vagueQuestions)
+print("version", versionMarked)
+print("id", idMarked)
