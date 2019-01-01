@@ -3,7 +3,7 @@ from imutils import contours as cutils
 import numpy as np 
 import cv2 as cv
 
-class FiftyQuestionTest:
+class ShortAnswerTest:
 
 	def __init__(self, page):
 		self.page = page
@@ -32,19 +32,19 @@ class FiftyQuestionTest:
 	# check if answer contour is within the correct coordinates
 	@staticmethod
 	def answerInBounds(x, y):
-		if 120 <= y <= 1800:
-			# within left column bounds
-			if 180 <= x <= 500:
+		if 25 <= y <= 100:
+			if 160 <= x <= 490:
 				return True
-			# within right column bounds
-			elif 770 <= x <= 1090:
+			elif 930 <= x <= 1250:
 				return True
-		return False 
+			elif 1690 <= x <= 2010:
+				return True
+		return False  
 
 	# check if version contour is within the correct coordinates
 	@staticmethod
 	def versionInBounds(x, y):
-		if 760 <= x <= 1080 and 310 <= y <= 320:
+		if 750 <= x <= 1080 and 310 <= y <= 320:
 			return True
 		else:
 			return False
@@ -52,19 +52,21 @@ class FiftyQuestionTest:
 	# check if id contour is within the correct coordinates
 	@staticmethod
 	def idInBounds(x, y):
-		if 15 <= x <= 760 and 15 <= y <= 600:
+		if 15 <= x <= 760 and 10 <= y <= 600:
 			return True
 		else:
 			return False
 
-  	# crop image slice for undetermined questions
+	# crop image slice for undetermined questions
 	def getImageSlice(self, questionNum, minY, maxY, offset):
 		diff = int((maxY - minY) / 25)
 
-		if 1 <= questionNum <= 25:
-			return self.page[(offset + minY + diff * (questionNum - 1)) : (offset + minY + diff * questionNum), 150 : 650]
-		elif 26 <= questionNum <= 50:
-			return self.page[(offset + minY + diff * (questionNum - 26)) : (offset + minY + diff * (questionNum - 25)), 675 : 1175]
+		if 1 <= questionNum <= 2:
+			return self.page[(offset + minY + diff * (questionNum - 1)) : (offset + minY + diff * questionNum), 160 : 490]
+		elif 3 <= questionNum <= 4:
+			return self.page[(offset + minY + diff * (questionNum - 3)) : (offset + minY + diff * (questionNum - 2)), 930 : 1250]
+		elif 5 <= questionNum <= 6:
+			return self.page[(offset + minY + diff * (questionNum - 5)) : (offset + minY + diff * (questionNum - 4)), 1690 : 2010]
 		else:
 			return None
 
@@ -76,19 +78,19 @@ class FiftyQuestionTest:
 		contours = sorted(contours, key=cv.contourArea, reverse=True)
 
 		(_, self.answersOffset, _, _) = cv.boundingRect(contours[2])
-		peri = cv.arcLength(contours[3], True)
-		approx = cv.approxPolyDP(contours[3], 0.02 * peri, True)
+		peri = cv.arcLength(contours[6], True)
+		approx = cv.approxPolyDP(contours[6], 0.02 * peri, True)
 		return four_point_transform(threshold, approx.reshape(4, 2))
 
 	# return contour for version box in test
 	def getVersionContour(self):
-		# threshold the page and find boxes within the page
+			# threshold the page and find boxes within the page
 		_, threshold = cv.threshold(self.page, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
 		_, contours, _ = cv.findContours(threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 		contours = sorted(contours, key=cv.contourArea, reverse=True)
 
-		peri = cv.arcLength(contours[6], True)
-		approx = cv.approxPolyDP(contours[6], 0.02 * peri, True)
+		peri = cv.arcLength(contours[4], True)
+		approx = cv.approxPolyDP(contours[4], 0.02 * peri, True)
 		return four_point_transform(threshold, approx.reshape(4, 2))
 
 	# return contour for id contour in test
@@ -98,8 +100,8 @@ class FiftyQuestionTest:
 		_, contours, _ = cv.findContours(threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 		contours = sorted(contours, key=cv.contourArea, reverse=True)
 
-		peri = cv.arcLength(contours[5], True)
-		approx = cv.approxPolyDP(contours[5], 0.02 * peri, True)
+		peri = cv.arcLength(contours[3], True)
+		approx = cv.approxPolyDP(contours[3], 0.02 * peri, True)
 		return four_point_transform(threshold, approx.reshape(4, 2))
 
 	@staticmethod
@@ -121,7 +123,7 @@ class FiftyQuestionTest:
 				# count as unsure	
 				elif total > 1000:
 					bubbled = '?'
-					self.unsure.append(question + 1 + (25 * columnNum))
+					self.unsure.append(question + 1 + (2 * columnNum))
 					self.images.append(getImageSlice(question + 1, minY, maxY, self.answersOffset))
 					break
 
@@ -146,20 +148,23 @@ class FiftyQuestionTest:
 
 		# grade bubbles in question box
 		answerContours, _ = cutils.sort_contours(answerContours, method="left-to-right")
-		length = len(answerContours)
-		mid = int(len(answerContours) / 2)
-		column1 = answerContours[0 : mid]
-		column2 = answerContours[mid : length]
+		third = int(len(answerContours) / 3)
+		column1 = answerContours[0 : third]
+		column2 = answerContours[third : 2 * third]
+		column3 = answerContours[2 * third : 3 * third]
 
-		# grade questions 1-25
+		# grade questions 1-2
 		column1, _ = cutils.sort_contours(column1, method="top-to-bottom")
 		self.gradeAnswersColumn(self, column1, 0, answersContour, minY, maxY)
 
-		# grade questions 26-50
+		# grade questions 3-4
 		column2, _ = cutils.sort_contours(column2, method="top-to-bottom")
 		self.gradeAnswersColumn(self, column2, 1, answersContour, minY, maxY)
 
-#TODO version in bounds
+		# grade questions 5-6
+		column3, _ = cutils.sort_contours(column3, method="top-to-bottom")
+		self.gradeAnswersColumn(self, column3, 2, answersContour, minY, maxY)
+
 	def gradeVersion(self, versionContour):
 		# find bubbles in version box
 		_, allContours, _ = cv.findContours(versionContour, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -167,7 +172,6 @@ class FiftyQuestionTest:
 
 		for contour in allContours:
 			(x, y, w, h) = cv.boundingRect(contour)
-			aspectRatio = w / float(h)
 
 			if w >= 45 and h >= 45 and self.versionInBounds(x, y):
 				versionContours.append(contour)
@@ -186,7 +190,6 @@ class FiftyQuestionTest:
 				self.version = chr(j + 65)
 				maxCount = total
 
-#TODO id in bounds
 	def gradeId(self, idContour):
 		# find bubbles in id box
 		_, allContours, _ = cv.findContours(idContour, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -194,7 +197,6 @@ class FiftyQuestionTest:
 
 		for contour in allContours:
 			(x, y, w, h) = cv.boundingRect(contour)
-			aspectRatio = w / float(h)
 
 			if w >= 45 and h >= 45 and self.idInBounds(x, y):
 				idContours.append(contour)
