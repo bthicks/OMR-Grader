@@ -30,8 +30,7 @@ class ShortAnswerTest:
       return self.id
 
    # check if answer contour is within the correct coordinates
-   @staticmethod
-   def answerInBounds(x, y):
+   def answerInBounds(self, x, y):
       if 25 <= y <= 100:
          if 160 <= x <= 490:
             return True
@@ -42,16 +41,14 @@ class ShortAnswerTest:
       return False  
 
    # check if version contour is within the correct coordinates
-   @staticmethod
-   def versionInBounds(x, y):
+   def versionInBounds(self, x, y):
       if 750 <= x <= 1080 and 310 <= y <= 320:
          return True
       else:
          return False
 
    # check if id contour is within the correct coordinates
-   @staticmethod
-   def idInBounds(x, y):
+   def idInBounds(self, x, y):
       if 15 <= x <= 760 and 10 <= y <= 600:
          return True
       else:
@@ -59,14 +56,14 @@ class ShortAnswerTest:
 
    # crop image slice for undetermined questions
    def getImageSlice(self, questionNum, minY, maxY, offset):
-      diff = int((maxY - minY) / 25)
+      diff = int((maxY - minY) / 2)
 
       if 1 <= questionNum <= 2:
-         return self.page[(offset + minY + diff * (questionNum - 1)) : (offset + minY + diff * questionNum), 160 : 490]
+         return self.page[(offset + minY + diff * (questionNum - 1)) : (offset + minY + diff * questionNum), 160 : 660]
       elif 3 <= questionNum <= 4:
-         return self.page[(offset + minY + diff * (questionNum - 3)) : (offset + minY + diff * (questionNum - 2)), 930 : 1250]
+         return self.page[(offset + minY + diff * (questionNum - 3)) : (offset + minY + diff * (questionNum - 2)), 930 : 1430]
       elif 5 <= questionNum <= 6:
-         return self.page[(offset + minY + diff * (questionNum - 5)) : (offset + minY + diff * (questionNum - 4)), 1690 : 2010]
+         return self.page[(offset + minY + diff * (questionNum - 5)) : (offset + minY + diff * (questionNum - 4)), 1690 : 2190]
       else:
          return None
 
@@ -77,7 +74,7 @@ class ShortAnswerTest:
       _, contours, _ = cv.findContours(threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
       contours = sorted(contours, key=cv.contourArea, reverse=True)
 
-      (_, self.answersOffset, _, _) = cv.boundingRect(contours[2])
+      (_, self.answersOffset, _, _) = cv.boundingRect(contours[6])
       peri = cv.arcLength(contours[6], True)
       approx = cv.approxPolyDP(contours[6], 0.02 * peri, True)
       return four_point_transform(threshold, approx.reshape(4, 2))
@@ -104,7 +101,6 @@ class ShortAnswerTest:
       approx = cv.approxPolyDP(contours[3], 0.02 * peri, True)
       return four_point_transform(threshold, approx.reshape(4, 2))
 
-   @staticmethod
    def gradeAnswersColumn(self, column, columnNum, answersContour, minY, maxY):
       # each field has 5 bubbles so loop in batches of 5
       for (question, i) in enumerate(np.arange(0, len(column), 5)):
@@ -118,13 +114,13 @@ class ShortAnswerTest:
             total = cv.countNonZero(mask)
 
             # if ~50% bubbled, count as marked
-            if total > 1700:
+            if total > 1600:
                bubbled += chr(j + 65)
             # count as unsure 
             elif total > 1000:
                bubbled = '?'
                self.unsure.append(question + 1 + (2 * columnNum))
-               self.images.append(getImageSlice(question + 1, minY, maxY, self.answersOffset))
+               self.images.append(self.getImageSlice(question + 1 + (2 * columnNum), minY, maxY, self.answersOffset))
                break
 
          self.answers.append(bubbled)
@@ -134,17 +130,18 @@ class ShortAnswerTest:
       _, allContours, _ = cv.findContours(answersContour, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
       answerContours = []
       yValues = []
+      height = None
 
       for contour in allContours:
          (x, y, w, h) = cv.boundingRect(contour)
 
          if w >= 45 and h >= 45 and self.answerInBounds(x, y):
             answerContours.append(contour)
-            tup = (y, h)
-            yValues.append(tup)
+            yValues.append(y)
+            height = h
 
-      minY = yValues[len(yValues) - 1][0]
-      maxY = yValues[0][0] + yValues[0][1]
+      minY = yValues[len(yValues) - 1] - int(height * 0.1)
+      maxY = yValues[0] + height + int(height * 0.25)
 
       # grade bubbles in question box
       answerContours, _ = cutils.sort_contours(answerContours, method="left-to-right")
@@ -155,15 +152,15 @@ class ShortAnswerTest:
 
       # grade questions 1-2
       column1, _ = cutils.sort_contours(column1, method="top-to-bottom")
-      self.gradeAnswersColumn(self, column1, 0, answersContour, minY, maxY)
+      self.gradeAnswersColumn(column1, 0, answersContour, minY, maxY)
 
       # grade questions 3-4
       column2, _ = cutils.sort_contours(column2, method="top-to-bottom")
-      self.gradeAnswersColumn(self, column2, 1, answersContour, minY, maxY)
+      self.gradeAnswersColumn(column2, 1, answersContour, minY, maxY)
 
       # grade questions 5-6
       column3, _ = cutils.sort_contours(column3, method="top-to-bottom")
-      self.gradeAnswersColumn(self, column3, 2, answersContour, minY, maxY)
+      self.gradeAnswersColumn(column3, 2, answersContour, minY, maxY)
 
    def gradeVersion(self, versionContour):
       # find bubbles in version box

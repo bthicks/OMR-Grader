@@ -51,8 +51,8 @@ def main():
    #cv.resizeWindow(args["image"], 850, 1100)
 
    page = findPage(im)
-   test = fifty_questions.FiftyQuestionTest(page)
-   #test = short_answer.ShortAnswerTest(page)
+   #test = fifty_questions.FiftyQuestionTest(page)
+   test = short_answer.ShortAnswerTest(page)
    answersContour = test.getAnswersContour()
    versionContour = test.getVersionContour()
    idContour = test.getIdContour()
@@ -78,9 +78,9 @@ def main():
    jsonData = json.dumps(data)
 
    # for debugging
-   #for image in images:
-   #  cv.imshow("img", image)
-   #  cv.waitKey()
+   for image in images:
+     cv.imshow("img", image)
+     cv.waitKey()
 
    print("answers", answers)
    print("unsure", unsure)
