@@ -5,6 +5,7 @@ import argparse
 import cv2 as cv
 import json
 import base64
+import pyzbar.pyzbar as pyzbar
 
 def findPage(im):
    # convert image to grayscale then blur to better detect contours
@@ -34,6 +35,11 @@ def findPage(im):
    # apply perspective transform to get top down view of page
    return four_point_transform(imgray, page.reshape(4, 2))
 
+def decodeQR(im): 
+   decodedObjects = pyzbar.decode(im)
+         
+   return decodedObjects[0].data.decode('utf-8')
+
 def main():
    # parse the arguments
    ap = argparse.ArgumentParser()
@@ -51,8 +57,19 @@ def main():
    #cv.resizeWindow(args["image"], 850, 1100)
 
    page = findPage(im)
-   #test = fifty_questions.FiftyQuestionTest(page)
-   test = short_answer.ShortAnswerTest(page)
+   qrData = decodeQR(im)
+
+   if qrData == "50q":
+      test = fifty_questions.FiftyQuestionTest(page)
+   elif qrData == "6q":
+      test = short_answer.ShortAnswerTest(page)
+   elif qrData is None:
+      print('QR code not found')
+      exit(0)
+   else:
+      print('Incorrect QR code found')
+      exit(0)
+
    answersContour = test.getAnswersContour()
    versionContour = test.getVersionContour()
    idContour = test.getIdContour()

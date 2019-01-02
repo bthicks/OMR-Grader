@@ -13,6 +13,8 @@ These instructions will get you a copy of the project up and running on your loc
 * NumPy
 * imutils
 * SciPy (Windows only)
+* ZBar
+* pyzbar
 
 ### Installing on Mac/Linux
 To install the libraries, run the following commands:
@@ -21,6 +23,8 @@ $ brew install python3
 $ pip install opencv-python
 $ pip install numpy
 $ pip install imutils
+$ brew install zbar
+$ pip install pyzbar
 ```
 
 ### Installing on Windows Subsystem for Linux
@@ -32,6 +36,8 @@ $ apt install python3-pip
 $ pip3 install numpy
 $ pip3 install scipy
 $ pip3 install imutils
+$ sudo apt-get install libzbar-dev libzbar0
+$ pip3 install pyzbar
 ```
 
 ## Running

@@ -81,7 +81,7 @@ class ShortAnswerTest:
 
    # return contour for version box in test
    def getVersionContour(self):
-         # threshold the page and find boxes within the page
+      # threshold the page and find boxes within the page
       _, threshold = cv.threshold(self.page, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
       _, contours, _ = cv.findContours(threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
       contours = sorted(contours, key=cv.contourArea, reverse=True)
