@@ -45,5 +45,5 @@ $ pip3 install pyzbar
 `$ python grader.py --image [path to image]`
 
 ## Acknowledgements
-Adrian Rosebrock's tutorial "Bubble sheet multiple choice scanner and test grader using OMR, Python, OpenCV"
-John Fremlin's tutorial "Rotating an image with OpenCV and Python"
+* Adrian Rosebrock's tutorial "Bubble sheet multiple choice scanner and test grader using OMR, Python, OpenCV"
+* John Fremlin's tutorial "Rotating an image with OpenCV and Python"
