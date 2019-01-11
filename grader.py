@@ -14,10 +14,10 @@ def findPage(im):
    # convert image to grayscale then blur to better detect contours
    imgray = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
    blurred = cv.GaussianBlur(imgray.copy(), (5, 5), 0)
-   edged = cv.Canny(blurred, 75, 200)
+   _, threshold = cv.threshold(blurred, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
 
    # find contour for entire page
-   _, contours, _ = cv.findContours(edged, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+   _, contours, _ = cv.findContours(threshold, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
    contours = sorted(contours, key=cv.contourArea, reverse=True)
    page = None
 
@@ -40,7 +40,7 @@ def findPage(im):
 
 # find and decode QR code in image
 def decodeQR(im): 
-   decodedObjects = pyzbar.decode(im)         
+   decodedObjects = pyzbar.decode(im)
    return decodedObjects[0]
 
 # rotate an image by a given angle

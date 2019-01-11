@@ -31,7 +31,7 @@ class ShortAnswerTest:
 
    # check if answer contour is within the correct coordinates
    def answerInBounds(self, x, y):
-      if 25 <= y <= 100:
+      if 25 <= y <= 110:
          if 160 <= x <= 490:
             return True
          elif 930 <= x <= 1250:
@@ -73,11 +73,25 @@ class ShortAnswerTest:
       _, threshold = cv.threshold(self.page, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
       _, contours, _ = cv.findContours(threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
       contours = sorted(contours, key=cv.contourArea, reverse=True)
+      pageWidth = self.page.shape[1]
+      pageHeight = self.page.shape[0]
 
-      (_, self.answersOffset, _, _) = cv.boundingRect(contours[6])
-      peri = cv.arcLength(contours[6], True)
-      approx = cv.approxPolyDP(contours[6], 0.02 * peri, True)
-      return four_point_transform(threshold, approx.reshape(4, 2))
+      for contour in contours:
+         peri = cv.arcLength(contour, True)
+         approx = cv.approxPolyDP(contour, 0.02 * peri, True)
+         x = approx[0][0][0]
+         y = approx[0][0][1]
+
+         if 0 < x < (pageWidth / 12) and (pageHeight / 1.4) < y < (pageHeight / 1.2):
+            answersContour = four_point_transform(threshold, approx.reshape(4, 2))
+            (_, self.answersOffset, _, _) = cv.boundingRect(contour)
+            break
+
+      if answersContour is None:
+         print("Answers contour not found")
+         exit(0)
+      else:
+         return answersContour
 
    # return contour for version box in test
    def getVersionContour(self):
@@ -85,10 +99,24 @@ class ShortAnswerTest:
       _, threshold = cv.threshold(self.page, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
       _, contours, _ = cv.findContours(threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
       contours = sorted(contours, key=cv.contourArea, reverse=True)
+      pageWidth = self.page.shape[1]
+      pageHeight = self.page.shape[0]
 
-      peri = cv.arcLength(contours[4], True)
-      approx = cv.approxPolyDP(contours[4], 0.02 * peri, True)
-      return four_point_transform(threshold, approx.reshape(4, 2))
+      for contour in contours:
+         peri = cv.arcLength(contour, True)
+         approx = cv.approxPolyDP(contour, 0.02 * peri, True)
+         x = approx[0][0][0]
+         y = approx[0][0][1]
+
+         if 0 < x < (pageWidth / 12) and (pageHeight / 11) < y < (pageHeight / 4):
+            versionContour = four_point_transform(threshold, approx.reshape(4, 2))
+            break
+
+      if versionContour is None:
+         print("Version contour not found")
+         exit(0)
+      else:
+         return versionContour
 
    # return contour for id contour in test
    def getIdContour(self):
@@ -96,10 +124,24 @@ class ShortAnswerTest:
       _, threshold = cv.threshold(self.page, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
       _, contours, _ = cv.findContours(threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
       contours = sorted(contours, key=cv.contourArea, reverse=True)
+      pageWidth = self.page.shape[1]
+      pageHeight = self.page.shape[0]
 
-      peri = cv.arcLength(contours[3], True)
-      approx = cv.approxPolyDP(contours[3], 0.02 * peri, True)
-      return four_point_transform(threshold, approx.reshape(4, 2))
+      for contour in contours:
+         peri = cv.arcLength(contour, True)
+         approx = cv.approxPolyDP(contour, 0.02 * peri, True)
+         x = approx[0][0][0]
+         y = approx[0][0][1]
+
+         if (pageWidth / 1.75) < x < (pageWidth / 1.55) and (pageHeight / 5) < y < (pageHeight / 4):
+            idContour = four_point_transform(threshold, approx.reshape(4, 2))
+            break
+
+      if idContour is None:
+         print("Version contour not found")
+         exit(0)
+      else:
+         return idContour
 
    def gradeAnswersColumn(self, column, columnNum, answersContour, minY, maxY):
       # each field has 5 bubbles so loop in batches of 5
