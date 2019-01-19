@@ -16,7 +16,7 @@ def findPage(im):
    blurred = cv.GaussianBlur(imgray.copy(), (5, 5), 0)
    _, threshold = cv.threshold(blurred, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
 
-   # find contour for entire page
+   # find contour for entire page 
    _, contours, _ = cv.findContours(threshold, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
    contours = sorted(contours, key=cv.contourArea, reverse=True)
    page = None
@@ -70,6 +70,7 @@ def imageIsUpright(page):
    qrCode = decodeQR(page)
    qrX = qrCode.rect.left
    qrY = qrCode.rect.top
+   print("QR X, QR Y:", qrX, qrY)
    qrH = qrCode.rect.height
    w = page.shape[1]
 
@@ -102,8 +103,8 @@ def main():
       exit(0)
 
    # for debugging
-   #cv.namedWindow(args["image"], cv.WINDOW_NORMAL)
-   #cv.resizeWindow(args["image"], 850, 1100)
+   cv.namedWindow(args["image"], cv.WINDOW_NORMAL)
+   cv.resizeWindow(args["image"], 850, 1100)
 
    # find test page within image
    page = findPage(im)
@@ -112,13 +113,14 @@ def main():
       exit(0)
 
    # rotate page until upright
-   page = uprightImage(page)
-   if page is None:
-      print('Could not upright page in', args["image"])
-      exit(0)
+   #page = uprightImage(page)
+   #if page is None:
+   #   print('Could not upright page in', args["image"])
+   #   exit(0)
 
-   qrCode = decodeQR(page)
-   qrData = qrCode.data.decode('utf-8')
+   #qrCode = decodeQR(page)
+   #qrData = qrCode.data.decode('utf-8')
+   qrData = "6q"
 
    if qrData == "50q":
       test = fifty_questions.FiftyQuestionTest(page)
