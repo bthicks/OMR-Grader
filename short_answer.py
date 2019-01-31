@@ -155,8 +155,6 @@ class ShortAnswerTest:
         # each field has 5 bubbles so loop in batches of 5
         for (question, i) in enumerate(np.arange(0, len(column), 5)):
             contours, _ = cutils.sort_contours(column[i:i + 5])
-            bubble_area = math.pi * (self.config['bubble_width'] / 2) ** 2
-            #print('area:', bubble_area)
             bubbled = ""
 
             for (j, c) in enumerate(contours):
@@ -164,7 +162,8 @@ class ShortAnswerTest:
                 cv.drawContours(mask, [c], -1, 255, -1)
                 mask = cv.bitwise_and(answersContour, answersContour, mask=mask)
                 total = cv.countNonZero(mask)
-                area = cv.contourArea(c)
+                (x, y, w, h) = cv.boundingRect(c)
+                area = math.pi * ((min(w, h) / 2) ** 2)
 
                 # if ~50% bubbled, count as marked
                 if (total / area) > 0.8:
@@ -196,8 +195,8 @@ class ShortAnswerTest:
             x += self.config['answer_x']
             y += self.config['answer_y']
  
-            if (w >= self.config['bubble_width']  
-                    and h >= self.config['bubble_height']  
+            if (w >= self.config['bubble_width'] - 1  
+                    and h >= self.config['bubble_height'] - 1  
                     and self.answerInBounds(x, y)):
                 answerContours.append(contour)
                 yValues.append(y)

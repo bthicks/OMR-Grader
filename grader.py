@@ -42,8 +42,14 @@ class Grader:
 
     # find and decode QR code in image
     def decodeQR(self, im): 
-        decodedObjects = pyzbar.decode(im)
-        return decodedObjects[0]
+        _, new_page = cv.threshold(im, 127, 255, cv.THRESH_BINARY)
+        decodedObjects = pyzbar.decode(new_page)
+
+        if (len(decodedObjects) > 0):
+            return decodedObjects[0]
+        else:
+            print('QR code not found')
+            exit(0)
 
     # rotate an image by a given angle
     def rotateImage(self, im, angle):
@@ -72,7 +78,6 @@ class Grader:
         qrCode = self.decodeQR(page)
         qrX = qrCode.rect.left
         qrY = qrCode.rect.top
-        #print("QR X, QR Y:", qrX, qrY)
         qrH = qrCode.rect.height
         w = page.shape[1]
         h = page.shape[0]
@@ -124,9 +129,6 @@ class Grader:
             test = fifty_questions.FiftyQuestionTest(page)
         elif qrData == "6q":
             test = short_answer.ShortAnswerTest(page)
-        elif qrData is None:
-            print('QR code not found')
-            exit(0)
         else:
             print('Incorrect QR code found')
             exit(0)
@@ -168,9 +170,6 @@ class Grader:
         #print("unsure", unsure)
         #print("version", version)
         #print("id", studentId)   
-
-        #cv.imshow(image_name, answersContour)
-        #cv.waitKey()
 
         return jsonData
 
