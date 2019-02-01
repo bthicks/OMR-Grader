@@ -157,10 +157,6 @@ class Grader:
         data = {"studentId" : studentId, "version" : version, 
         "answers" : answers, "unsure" : unsure, "images" : encodedImages}
         
-        jsonData = json.dumps(data)
-        with open(image_name + ".json","w") as f:
-            f.write(jsonData)
-
         # for debugging
         #for image in images:
         #    cv.imshow("img", image)
@@ -171,7 +167,7 @@ class Grader:
         #print("version", version)
         #print("id", studentId)   
 
-        return jsonData
+        return json.dumps(data)
 
 def main():
     # parse the arguments
@@ -183,4 +179,4 @@ def main():
     data = grader.grade(args["image"])
     return data 
 
-#main()
+main()

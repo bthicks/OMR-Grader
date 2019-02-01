@@ -195,8 +195,8 @@ class ShortAnswerTest:
             x += self.config['answer_x']
             y += self.config['answer_y']
  
-            if (w >= self.config['bubble_width'] - 1  
-                    and h >= self.config['bubble_height'] - 1  
+            if (w >= self.config['bubble_width'] * 0.9   
+                    and h >= self.config['bubble_height'] * 0.9
                     and self.answerInBounds(x, y)):
                 answerContours.append(contour)
                 yValues.append(y)
@@ -234,8 +234,8 @@ class ShortAnswerTest:
             x += self.config['version_x']
             y += self.config['version_y']
 
-            if (w >= self.config['bubble_width'] 
-                    and h >= self.config['bubble_height'] 
+            if (w >= self.config['bubble_width'] * 0.9
+                    and h >= self.config['bubble_height'] * 0.9 
                     and self.versionInBounds(x, y)):
                 versionContours.append(contour)
 
@@ -263,8 +263,8 @@ class ShortAnswerTest:
             x += self.config['id_x']
             y += self.config['id_y']
 
-            if (w >= self.config['bubble_width'] 
-                    and h >= self.config['bubble_height'] 
+            if (w >= self.config['bubble_width'] * 0.9
+                    and h >= self.config['bubble_height'] * 0.9
                     and self.idInBounds(x, y)):
                 idContours.append(contour)
 
