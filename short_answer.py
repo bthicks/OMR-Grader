@@ -101,8 +101,8 @@ class ShortAnswerTest:
         for contour in contours:
             (x, y, _, _) = cv.boundingRect(contour)
 
-            if (self.config['answer_x'] - 10 <= x <= self.config['answer_x'] + 10 
-                    and self.config['answer_y'] - 10 <= y <= self.config['answer_y'] + 10):
+            if (self.config['answer_x'] - self.config['x_error'] <= x <= self.config['answer_x'] + self.config['x_error'] 
+                    and self.config['answer_y'] - self.config['y_error'] <= y <= self.config['answer_y'] + self.config['y_error']):
                 (_, self.answersOffset, _, _) = cv.boundingRect(contour)            
                 peri = cv.arcLength(contour, True)
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
@@ -122,8 +122,8 @@ class ShortAnswerTest:
         for contour in contours:
             (x, y, _, _) = cv.boundingRect(contour)
 
-            if (self.config['version_x'] - 10 <= x <= self.config['version_x'] + 10 
-                    and self.config['version_y'] - 10 <= y <= self.config['version_y'] + 10):
+            if (self.config['version_x'] - self.config['x_error'] <= x <= self.config['version_x'] + self.config['x_error']
+                    and self.config['version_y'] - self.config['y_error'] <= y <= self.config['version_y'] + self.config['y_error']):
                 peri = cv.arcLength(contour, True)
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
                 return four_point_transform(threshold, approx.reshape(4, 2))
@@ -142,13 +142,13 @@ class ShortAnswerTest:
         for contour in contours:
             (x, y, _, _) = cv.boundingRect(contour)
 
-            if (self.config['id_x'] - 10 <= x <= self.config['id_x'] + 10 
-                    and self.config['id_y'] - 10 <= y <= self.config['id_y'] + 10):
+            if (self.config['id_x'] - self.config['x_error'] <= x <= self.config['id_x'] + self.config['x_error'] 
+                    and self.config['id_y'] - self.config['y_error'] <= y <= self.config['id_y'] + self.config['y_error']):
                 peri = cv.arcLength(contour, True)
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
                 return four_point_transform(threshold, approx.reshape(4, 2))
 
-        print("Version contour not found")
+        print("ID contour not found")
         exit(0)
 
     def gradeAnswersColumn(self, column, columnNum, answersContour, minY, maxY):
