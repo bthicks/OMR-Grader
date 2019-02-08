@@ -98,6 +98,20 @@ class Grader:
                     return page
         return None
 
+    # scale values in config dictionary based on width and height of the image 
+    # being graded
+    def scaleConfig(self, config, width, height):
+        x_scale = width / config['page_width']
+        y_scale = height / config['page_height']
+
+        for key, val in config.items():
+            if 'x' in key or key == 'bubble_width':
+                config[key] = val * x_scale
+            elif 'y' in key or key == 'bubble_height':
+                config[key] = val * y_scale
+
+        return config
+
     def grade(self, image_name):
         # load image 
         im = cv.imread(image_name)
@@ -121,17 +135,17 @@ class Grader:
             print('Could not upright page in', image_name)
             exit(0)
 
+        # QR code will contain path to configuration file
         qrCode = self.decodeQR(page)
         qrData = qrCode.data.decode('utf-8')
-        qrData = "6q"
+        qrData = 'config/6q.json'
 
-        if qrData == "50q":
-            test = fifty_questions.FiftyQuestionTest(page)
-        elif qrData == "6q":
-            test = short_answer.ShortAnswerTest(page)
-        else:
-            print('Incorrect QR code found')
-            exit(0)
+        # read config file into dictionary and scale values
+        with open('config/6q.json') as file:
+            config = json.load(file)
+        config = self.scaleConfig(config, page.shape[1], page.shape[0])
+
+        test = short_answer.ShortAnswerTest(page, config)
 
         answersContour = test.getAnswersContour()
         versionContour = test.getVersionContour()
@@ -179,4 +193,5 @@ def main():
     data = grader.grade(args["image"])
     return data 
 
-main()
+if __name__ == "__main__":
+    main()

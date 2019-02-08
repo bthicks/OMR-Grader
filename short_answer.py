@@ -6,7 +6,7 @@ import cv2 as cv
 
 class ShortAnswerTest:
 
-    def __init__(self, page):
+    def __init__(self, page, config):
         self.page = page
         self.answers = []
         self.unsure = []
@@ -14,26 +14,7 @@ class ShortAnswerTest:
         self.version = None
         self.id = ""
         self.answersOffset = None
-        self.std_config = {'page_width': 565.06, 'page_height': 259, 
-            'bubble_width': 10.8, 'bubble_height': 10.8, 'qr_x': 23.79, 'qr_y': 136.88,
-            'id_rows': 10, 'id_columns': 9, 'id_x': 343.03, 'id_y': 34.89, 
-            'id_x_min': 348.53, 'id_x_max': 524.46, 'id_y_min': 39.43, 
-            'id_y_max': 177.54, 'version_x': 23.65, 'version_y': 20.86, 
-            'version_x_min': 208.25, 'version_x_max': 293.17, 'version_y_min': 96.12, 
-            'version_y_max': 106.92, 'answer_x': 23.65, 'answer_y': 202.63, 
-            'answer_x_min_1': 65.07, 'answer_x_max_1': 139.19, 'answer_x_min_2': 248.45,
-            'answer_x_max_2': 322.58, 'answer_x_min_3': 432.05, 'answer_x_max_3': 506.17,
-            'answer_y_min': 210.44, 'answer_y_max': 227.14, 'x_error': 8.1, 'y_error': 8.1}
-        self.x_scale = self.page.shape[1] / self.std_config['page_width']
-        self.y_scale = self.page.shape[0] / self.std_config['page_height']
-        self.config = {}
-        for key, val in self.std_config.items():
-            if 'x' in key or key == 'bubble_width':
-                self.config[key] = val * self.x_scale
-            elif 'y' in key or key == 'bubble_height':
-                self.config[key] = val * self.y_scale
-            else:
-                self.config[key] = val
+        self.config = config
 
     def getAnswers(self):
         return self.answers
