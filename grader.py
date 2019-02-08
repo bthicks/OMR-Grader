@@ -211,10 +211,12 @@ class Grader:
         #    cv.imshow("img", image)
         #    cv.waitKey()
 
-        #print("answers", answers)
-        #print("unsure", unsure)
-        #print("version", version)
-        #print("id", studentId)   
+        #print(data['answers'])
+        #print(data['version'])
+        #print(data['studentId'])
+        #print(data['unsure'])
+        #print(data['status'])
+        #print(data['error'])
 
         return json.dump(data, sys.stdout);
 
