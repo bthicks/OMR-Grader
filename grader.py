@@ -21,7 +21,6 @@ class Grader:
         # find contour for entire page 
         _, contours, _ = cv.findContours(threshold, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key=cv.contourArea, reverse=True)
-        page = None
 
         if len(contours) > 0:
             # approximate the contour
@@ -34,8 +33,7 @@ class Grader:
                     page = approx
                     break 
         else:
-            print('No page found in image')
-            exit(0)
+            return None
 
         # apply perspective transform to get top down view of page
         return four_point_transform(imgray, page.reshape(4, 2))
@@ -45,11 +43,10 @@ class Grader:
         _, new_page = cv.threshold(im, 127, 255, cv.THRESH_BINARY)
         decodedObjects = pyzbar.decode(new_page)
 
-        if (len(decodedObjects) > 0):
-            return decodedObjects[0]
+        if decodedObjects == []:
+            return None
         else:
-            print('QR code not found')
-            exit(0)
+            return decodedObjects[0]
 
     # rotate an image by a given angle
     def rotateImage(self, im, angle):
@@ -113,63 +110,94 @@ class Grader:
         return config
 
     def grade(self, image_name):
-        # load image 
-        im = cv.imread(image_name)
-        if im is None:
-            print('Image', image_name, 'not found')
-            exit(0)
-
         # for debugging
         #cv.namedWindow(image_name, cv.WINDOW_NORMAL)
         #cv.resizeWindow(image_name, 850, 1100)
 
+        # initialize dictionary to be returned
+        data = {'studentId' : '', "version" : '', 'answers' : [], 'unsure' : [],
+            'images' : [], 'status' : 'success', 'error' : ''}  
+
+        # load image 
+        im = cv.imread(image_name)
+        if im is None:
+            data['status'] = 'failure'
+            data['error'] = 'Image', image_name, 'not found'
+            return json.dumps(data)
+
         # find test page within image
         page = self.findPage(im)
         if page is None:
-            print('Page not found in', image_name)
-            exit(0)
+            data['status'] = 'failure'
+            data['error'] = 'Page not found in', image_name
+            return json.dumps(data)
+
+        # decode QR code, which will contain path to configuration file
+        qrCode = self.decodeQR(page)
+        if qrCode is None:
+            data['status'] = 'failure'
+            data['error'] = 'QR code not found'
+            return json.dumps(data)
+        else:
+            qrData = qrCode.data.decode('utf-8')
+            qrData = 'config/6q.json'
+
+        # read config file into dictionary and scale values
+        try:
+            with open('config/6q.json') as file:
+                config = json.load(file)
+            config = self.scaleConfig(config, page.shape[1], page.shape[0])
+        except FileNotFoundError:
+            data['status'] = 'failure'
+            data['error'] = 'Configuration file', qrData, 'not found'
+            return json.dumps(data)
 
         # rotate page until upright
         page = self.uprightImage(page)
         if page is None:
-            print('Could not upright page in', image_name)
-            exit(0)
+            data['status'] = 'failure'
+            data['error'] = 'Could not upright page in', image_name
+            return json.dumps(data)
 
-        # QR code will contain path to configuration file
-        qrCode = self.decodeQR(page)
-        qrData = qrCode.data.decode('utf-8')
-        qrData = 'config/6q.json'
-
-        # read config file into dictionary and scale values
-        with open('config/6q.json') as file:
-            config = json.load(file)
-        config = self.scaleConfig(config, page.shape[1], page.shape[0])
-
+        # create test object
         test = short_answer.ShortAnswerTest(page, config)
 
+        # find answers box and grade bubbles
         answersContour = test.getAnswersContour()
+        if answersContour is None:
+            data['status'] = 'failure'
+            data['error'] = 'Answers contour not found'
+        else:
+            test.gradeAnswers(answersContour)
+            data['answers'] = test.getAnswers()
+
+        # find version box and grade bubbles
         versionContour = test.getVersionContour()
+        if versionContour is None:
+            data['status'] = 'failure'
+            data['error'] = 'Version contour not found'
+        else:
+            test.gradeVersion(versionContour)
+            data['version'] = test.getVersion()
+
+        # find id box and grade bubbles
         idContour = test.getIdContour()
-
-        test.gradeAnswers(answersContour)
-        test.gradeVersion(versionContour)
-        test.gradeId(idContour)
-
-        answers = test.getAnswers()
-        unsure = test.getUnsure()
-        images = test.getImages()
-        version = test.getVersion()
-        studentId = test.getId()
+        if idContour is None:
+            data['status'] = 'failure'
+            data['error'] = 'ID contour not found'
+        else:
+            test.gradeId(idContour)
+            data['studentId'] = test.getId()
 
         # encode image slices into base64
         encodedImages = []
-        for image in images:
+        for image in test.getImages():
             _, binary = cv.imencode('.png', image)
             encoded = base64.b64encode(binary)
             encodedImages.append(encoded.decode("utf-8"))
 
-        data = {"studentId" : studentId, "version" : version, 
-        "answers" : answers, "unsure" : unsure, "images" : encodedImages}
+        data['unsure'] = test.getUnsure()
+        data['images'] = encodedImages
         
         # for debugging
         #for image in images:

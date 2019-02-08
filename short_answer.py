@@ -89,8 +89,7 @@ class ShortAnswerTest:
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
                 return four_point_transform(threshold, approx.reshape(4, 2))
 
-        print("Answers contour not found")
-        exit(0)
+        return None
 
     # return contour for version box in test
     def getVersionContour(self):
@@ -109,8 +108,7 @@ class ShortAnswerTest:
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
                 return four_point_transform(threshold, approx.reshape(4, 2))
 
-        print("Version contour not found")
-        exit(0)
+        return None
 
     # return contour for id contour in test
     def getIdContour(self):
@@ -129,8 +127,7 @@ class ShortAnswerTest:
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
                 return four_point_transform(threshold, approx.reshape(4, 2))
 
-        print("ID contour not found")
-        exit(0)
+        return None
 
     def gradeAnswersColumn(self, column, columnNum, answersContour, minY, maxY):
         # each field has 5 bubbles so loop in batches of 5
