@@ -109,6 +109,12 @@ class Grader:
 
         return config
 
+    # encode .png image into a base64 string
+    def encodeImage(self, image):
+        _, binary = cv.imencode('.png', image)
+        encoded = base64.b64encode(binary)
+        return encoded.decode("utf-8")
+
     def grade(self, image_name):
         # for debugging
         #cv.namedWindow(image_name, cv.WINDOW_NORMAL)
@@ -116,7 +122,7 @@ class Grader:
 
         # initialize dictionary to be returned
         data = {'studentId' : '', "version" : '', 'answers' : [], 'unsure' : [],
-            'images' : [], 'status' : 'success', 'error' : ''}  
+        'images' : [], 'status' : 'success', 'error' : '', 'testImage' : ''}
 
         # load image 
         im = cv.imread(image_name)
@@ -124,6 +130,8 @@ class Grader:
             data['status'] = 'failure'
             data['error'] = 'Image', image_name, 'not found'
             return json.dumps(data)
+        else:
+            data['testImage'] = self.encodeImage(im)
 
         # find test page within image
         page = self.findPage(im)
@@ -192,9 +200,7 @@ class Grader:
         # encode image slices into base64
         encodedImages = []
         for image in test.getImages():
-            _, binary = cv.imencode('.png', image)
-            encoded = base64.b64encode(binary)
-            encodedImages.append(encoded.decode("utf-8"))
+            encodedImages.append(encodeImage(image))
 
         data['unsure'] = test.getUnsure()
         data['images'] = encodedImages
@@ -217,9 +223,9 @@ def main():
     ap.add_argument("-i", "--image", required=True, help="path to the input image")
     args = vars(ap.parse_args())
 
+    # grade test
     grader = Grader()
-    data = grader.grade(args["image"])
-    return data 
+    return grader.grade(args["image"]) 
 
 if __name__ == "__main__":
     main()
