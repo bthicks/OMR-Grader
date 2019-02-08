@@ -8,6 +8,7 @@ import numpy as np
 import json
 import base64
 import pyzbar.pyzbar as pyzbar
+import sys, os
 
 class Grader:
 
@@ -129,43 +130,43 @@ class Grader:
         if im is None:
             data['status'] = 'failure'
             data['error'] = 'Image', image_name, 'not found'
-            return json.dumps(data)
+            return json.dump(data, sys.stdout);
         else:
-            data['testImage'] = self.encodeImage(im)
+            data['testImage'] = '' #self.encodeImage(im)
 
         # find test page within image
         page = self.findPage(im)
         if page is None:
             data['status'] = 'failure'
             data['error'] = 'Page not found in', image_name
-            return json.dumps(data)
+            return json.dump(data, sys.stdout);
 
         # decode QR code, which will contain path to configuration file
         qrCode = self.decodeQR(page)
         if qrCode is None:
             data['status'] = 'failure'
             data['error'] = 'QR code not found'
-            return json.dumps(data)
+            return json.dump(data, sys.stdout);
         else:
             qrData = qrCode.data.decode('utf-8')
-            qrData = 'config/6q.json'
+            qrData = os.path.dirname(os.path.abspath(sys.argv[0]))+'/config/6q.json'
 
         # read config file into dictionary and scale values
         try:
-            with open('config/6q.json') as file:
+            with open(os.path.dirname(os.path.abspath(sys.argv[0]))+'/config/6q.json') as file:
                 config = json.load(file)
             config = self.scaleConfig(config, page.shape[1], page.shape[0])
         except FileNotFoundError:
             data['status'] = 'failure'
             data['error'] = 'Configuration file', qrData, 'not found'
-            return json.dumps(data)
+            return json.dump(data, sys.stdout);
 
         # rotate page until upright
         page = self.uprightImage(page)
         if page is None:
             data['status'] = 'failure'
             data['error'] = 'Could not upright page in', image_name
-            return json.dumps(data)
+            return json.dump(data, sys.stdout);
 
         # create test object
         test = short_answer.ShortAnswerTest(page, config)
@@ -215,7 +216,7 @@ class Grader:
         #print("version", version)
         #print("id", studentId)   
 
-        return json.dumps(data)
+        return json.dump(data, sys.stdout);
 
 def main():
     # parse the arguments
