@@ -219,17 +219,25 @@ class ShortAnswerTest:
 
         # grade bubbles in version box
         versionContours, _ = cutils.sort_contours(versionContours, method="left-to-right")
-        maxCount = None
+        bubbled = ""
 
         for (j, c) in enumerate(versionContours):
             mask = np.zeros(versionContour.shape, dtype="uint8")
             cv.drawContours(mask, [c], -1, 255, -1)
             mask = cv.bitwise_and(versionContour, versionContour, mask=mask)
             total = cv.countNonZero(mask)
+            (x, y, w, h) = cv.boundingRect(c)
+            area = math.pi * ((min(w, h) / 2) ** 2)
 
-            if self.version is None or total > maxCount:
-                self.version = chr(j + 65)
-                maxCount = total
+            # if ~50% bubbled, count as marked
+            if (total / area) > 0.8:
+                bubbled += chr(j + 65)
+            # count as unsure
+            elif (total / area > 0.7):
+                bubbled = '?'
+                break;
+
+        self.version = bubbled
 
     def gradeId(self, idContour):
         # find bubbles in id box
@@ -253,16 +261,26 @@ class ShortAnswerTest:
         for (q, i) in enumerate(np.arange(0, len(idContours), 10)):
             contours, _ = cutils.sort_contours(idContours[i:i + 10], method="top-to-bottom")
             bubbled = None
-            maxCount = None
+            maxCount = -float("inf")
 
             for (j, c) in enumerate(contours):
                 mask = np.zeros(idContour.shape, dtype="uint8")
                 cv.drawContours(mask, [c], -1, 255, -1)
                 mask = cv.bitwise_and(idContour, idContour, mask=mask)
                 total = cv.countNonZero(mask)
+                (x, y, w, h) = cv.boundingRect(c)
+                area = math.pi * ((min(w, h) / 2) ** 2)
 
-                if bubbled is None or total > maxCount:
+                # if ~50% bubbled, count as marked
+                if (total / area) > 0.8 and total > maxCount:
                     bubbled = j
                     maxCount = total
+                # count as unsure
+                elif (total / area > 0.7):
+                    bubbled = '?'
+                    break;
+
+            if bubbled is None:
+                bubbled = '-'
 
             self.id += str(bubbled)
