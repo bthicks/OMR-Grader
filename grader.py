@@ -205,6 +205,8 @@ class Grader:
 
         data['unsure'] = test.getUnsure()
         data['images'] = encodedImages
+
+        json.dump(data, sys.stdout);
         
         # for debugging
         #for image in images:
@@ -218,7 +220,8 @@ class Grader:
         #print(data['status'])
         #print(data['error'])
 
-        return json.dump(data, sys.stdout);
+        # for testing
+        #return json.dumps(data)
 
 def main():
     # parse the arguments
