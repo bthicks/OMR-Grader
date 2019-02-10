@@ -389,6 +389,348 @@ class CalQuizTest(unittest.TestCase):
         self.assertEqual(data['answers'], ['B', 'A', 'B', '', '', ''])
         self.assertEqual(data['studentId'], '016336524')
 
+    def test_quiz_3_05(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-05.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '016018973') 
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_06(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-06.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['A', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '012488069')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_07(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-07.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'C', '', '', '', ''])
+        self.assertEqual(data['studentId'], '014411796')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_08(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-08.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['D', 'A', '', '', '', ''])
+        self.assertEqual(data['studentId'], '014589051')
+        self.assertEqual(data['version'], '') 
+
+    def test_quiz_3_09(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-09.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['', '', '', '', '', ''])
+        self.assertEqual(data['studentId'], '016423302')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_10(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-10.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['A', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '014286268')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_11(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-11.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['', '', '', '', '', ''])
+        self.assertEqual(data['studentId'], '---------')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_12(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-12.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '016005344')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_13(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-13.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015746870')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_14(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-14.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['', '', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015838364')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_15(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-15.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015606340')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_16(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-16.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015870123')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_17(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-17.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'C', '', '', '', ''])
+        self.assertEqual(data['studentId'], '016268755')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_18(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-18.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '016057466')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_19(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-19.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015563882')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_20(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-20.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'C', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015588517')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_21(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-21.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '---------')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_22(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-22.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['E', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015929936')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_23(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-23.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['', '', '', '', '', ''])
+        self.assertEqual(data['studentId'], '---------')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_24(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-24.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '013733300')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_25(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-25.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '016156487')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_26(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-26.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'C', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015664944')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_27(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-27.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '014343676')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_28(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-28.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['E', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015655870')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_29(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-29.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015767007')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_30(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-30.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015359457')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_31(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-31.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['D', 'C', '', '', '', ''])
+        self.assertEqual(data['studentId'], '016273747')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_32(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-32.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['A', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '014663775')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_33(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-33.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['A', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '014585710')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_34(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-34.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '014696145')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_35(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-35.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '014066178')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_36(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-36.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '013975789')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_37(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-37.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['', '', '', '', '', ''])
+        self.assertEqual(data['studentId'], '014139797')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_38(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-38.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'C', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015636828')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_39(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-39.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['', '', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015973265')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_40(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-40.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['B', 'C', '', '', '', ''])
+        self.assertEqual(data['studentId'], '015222528')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_41(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-41.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['A', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '013458311')
+        self.assertEqual(data['version'], '')
+
+    def test_quiz_3_42(self):
+        grader = g.Grader()
+        jsonData = grader.grade("calQuiz/quiz3/image-42.png")
+        data = json.loads(jsonData)
+
+        self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
+        self.assertEqual(data['studentId'], '---------')
+        self.assertEqual(data['version'], '')
+
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(CalQuizTest)
     unittest.TextTestRunner(verbosity=2).run(suite)
