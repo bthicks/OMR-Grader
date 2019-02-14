@@ -431,7 +431,7 @@ class CalQuizTest(unittest.TestCase):
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers'], ['', '', '', '', '', ''])
-        self.assertEqual(data['studentId'], '016423302')
+        self.assertEqual(data['studentId'], '016413302')
         self.assertEqual(data['version'], '')
 
     def test_quiz_3_10(self):
@@ -458,7 +458,7 @@ class CalQuizTest(unittest.TestCase):
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers'], ['C', 'B', '', '', '', ''])
-        self.assertEqual(data['studentId'], '016005344')
+        self.assertEqual(data['studentId'], '016005349')
         self.assertEqual(data['version'], '')
 
     def test_quiz_3_13(self):
@@ -584,7 +584,7 @@ class CalQuizTest(unittest.TestCase):
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers'], ['C', 'C', '', '', '', ''])
-        self.assertEqual(data['studentId'], '015664944')
+        self.assertEqual(data['studentId'], '005664944')
         self.assertEqual(data['version'], '')
 
     def test_quiz_3_27(self):
@@ -692,7 +692,7 @@ class CalQuizTest(unittest.TestCase):
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers'], ['C', 'C', '', '', '', ''])
-        self.assertEqual(data['studentId'], '015636828')
+        self.assertEqual(data['studentId'], '015626828')
         self.assertEqual(data['version'], '')
 
     def test_quiz_3_39(self):

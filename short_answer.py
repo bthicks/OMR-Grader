@@ -175,6 +175,7 @@ class ShortAnswerTest:
  
             if (w >= self.config['bubble_width'] * 0.9   
                     and h >= self.config['bubble_height'] * 0.9
+                    and 0.7 <= w / float(h) <= 1.3
                     and self.answerInBounds(x, y)):
                 answerContours.append(contour)
                 yValues.append(y)
@@ -213,8 +214,9 @@ class ShortAnswerTest:
             y += self.config['version_y']
 
             if (w >= self.config['bubble_width'] * 0.9
-                    and h >= self.config['bubble_height'] * 0.9 
-                    and self.versionInBounds(x, y)):
+                    and h >= self.config['bubble_height'] * 0.9
+                    and 0.7 <= w / float(h) <= 1.3
+                    and self.versionInBounds(x, y))
                 versionContours.append(contour)
 
         # grade bubbles in version box
@@ -251,6 +253,7 @@ class ShortAnswerTest:
 
             if (w >= self.config['bubble_width'] * 0.9
                     and h >= self.config['bubble_height'] * 0.9
+                    and 0.7 <= w / float(h) <= 1.3
                     and self.idInBounds(x, y)):
                 idContours.append(contour)
 
