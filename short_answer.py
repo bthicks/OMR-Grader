@@ -87,7 +87,13 @@ class ShortAnswerTest:
                 (_, self.answersOffset, _, _) = cv.boundingRect(contour)            
                 peri = cv.arcLength(contour, True)
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
-                return four_point_transform(threshold, approx.reshape(4, 2))
+                contour = four_point_transform(threshold, approx.reshape(4, 2))
+                _, innerContours, _ = cv.findContours(contour, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+
+                if (len(innerContours) <= 4):
+                    continue
+                else:
+                    return contour
 
         return None
 
@@ -216,7 +222,7 @@ class ShortAnswerTest:
             if (w >= self.config['bubble_width'] * 0.9
                     and h >= self.config['bubble_height'] * 0.9
                     and 0.7 <= w / float(h) <= 1.3
-                    and self.versionInBounds(x, y))
+                    and self.versionInBounds(x, y)):
                 versionContours.append(contour)
 
         # grade bubbles in version box
