@@ -90,9 +90,7 @@ class ShortAnswerTest:
                 contour = four_point_transform(threshold, approx.reshape(4, 2))
                 _, innerContours, _ = cv.findContours(contour, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
-                if (len(innerContours) <= 4):
-                    continue
-                else:
+                if (len(innerContours) > 4):
                     return contour
 
         return None

@@ -123,7 +123,7 @@ class Grader:
 
         # initialize dictionary to be returned
         data = {'studentId' : '', "version" : '', 'answers' : [], 'unsure' : [],
-        'images' : [], 'status' : 'success', 'error' : '', 'testImage' : ''}
+        'images' : [], 'status' : 'success', 'error' : ''}
 
         # load image 
         im = cv.imread(image_name)
@@ -131,8 +131,6 @@ class Grader:
             data['status'] = 'failure'
             data['error'] = 'Image', image_name, 'not found'
             return json.dump(data, sys.stdout);
-        else:
-            data['testImage'] = '' #self.encodeImage(im)
 
         # find test page within image
         page = self.findPage(im)
