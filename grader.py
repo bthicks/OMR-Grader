@@ -1,104 +1,173 @@
+import os
+import sys
+import argparse
+import base64
+import json
+import math
+
+import cv2 as cv
 from imutils.perspective import four_point_transform
+import pyzbar.pyzbar as pyzbar
+import numpy as np 
+
 import fifty_questions
 import short_answer
-import argparse
-import cv2 as cv
-import math
-import numpy as np 
-import json
-import base64
-import pyzbar.pyzbar as pyzbar
-import sys, os
+
 
 class Grader:
 
-    # find and return test page within a given image
-    def findPage(self, im):
-        # convert image to grayscale then blur to better detect contours
+    def find_page(self, im):
+        """
+        Finds and returns the test box within a given image.
+
+        Args:
+            im (numpy.ndarray): An ndarray representing the entire test image.
+
+        Returns:
+            numpy.ndarray: An ndarray representing the test box in the image.
+
+        """
+        # Convert image to grayscale then blur to better detect contours.
         imgray = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
         blurred = cv.GaussianBlur(imgray.copy(), (5, 5), 0)
         _, threshold = cv.threshold(blurred, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
 
-        # find contour for entire page 
+        # Find contour for entire page. 
         _, contours, _ = cv.findContours(threshold, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key=cv.contourArea, reverse=True)
 
         if len(contours) > 0:
-            # approximate the contour
+            # Approximate the contour.
             for contour in contours:
                 peri = cv.arcLength(contour, True)
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
 
-                # verify that contour has four corners
+                # Verify that contour has four corners.
                 if len(approx) == 4:
                     page = approx
                     break 
         else:
             return None
 
-        # apply perspective transform to get top down view of page
+        # Apply perspective transform to get top down view of page.
         return four_point_transform(imgray, page.reshape(4, 2))
 
-    # find and decode QR code in image
-    def decodeQR(self, im): 
-        _, new_page = cv.threshold(im, 127, 255, cv.THRESH_BINARY)
-        decodedObjects = pyzbar.decode(new_page)
+    def decode_qr(self, im): 
+        """
+        Finds and decodes the QR code inside of a test image.
 
-        if decodedObjects == []:
+        Args:
+            im (numpy.ndarray): An ndarray representing the entire test image.
+
+        Returns:
+            pyzbar.Decoded: A decoded QR code object.
+
+        """
+        # Increase image contrast to better identify QR code.
+        _, new_page = cv.threshold(im, 127, 255, cv.THRESH_BINARY)
+
+        decoded_objects = pyzbar.decode(new_page)
+
+        if decoded_objects == []:
             return None
         else:
-            return decodedObjects[0]
+            return decoded_objects[0]
 
-    # rotate an image by a given angle
-    def rotateImage(self, im, angle):
+    def rotate_image(self, im, angle):
+        """
+        Rotates an image by a specified angle.
+
+        Args:
+            im (numpy.ndarray): An ndarray representing the entire test image.
+            angle (int): The angle, in degrees, by which the image should be 
+                rotated.
+
+        Returns:
+            numpy.ndarray: An ndarray representing the rotated test image.
+
+        """
         w = im.shape[1]
         h = im.shape[0]
         rads = np.deg2rad(angle)
 
-        # calculate new image width and height
+        # Calculate new image width and height.
         nw = abs(np.sin(rads) * h) + abs(np.cos(rads) * w)
         nh = abs(np.cos(rads) * h) + abs(np.sin(rads) * w)
 
-        # get the rotation matrix
-        rotMat = cv.getRotationMatrix2D((nw * 0.5, nh * 0.5), angle, 1)
+        # Get the rotation matrix.
+        rot_mat = cv.getRotationMatrix2D((nw * 0.5, nh * 0.5), angle, 1)
 
-        # calculate the move from old center to new center combined with the rotation
-        rotMove = np.dot(rotMat, np.array([(nw - w) * 0.5, (nh - h) * 0.5, 0]))
+        # Calculate the move from old center to new center combined with the 
+        # rotation.
+        rot_move = np.dot(rot_mat, np.array([(nw - w) * 0.5, (nh - h) * 0.5, 0]))
 
-        # update the translation of the transform
-        rotMat[0,2] += rotMove[0]
-        rotMat[1,2] += rotMove[1]
+        # Update the translation of the transform.
+        rot_mat[0,2] += rot_move[0]
+        rot_mat[1,2] += rot_move[1]
 
-        return cv.warpAffine(im, rotMat, (int(math.ceil(nw)), int(math.ceil(nh))), flags=cv.INTER_LANCZOS4)
+        return cv.warpAffine(im, rot_mat, (int(math.ceil(nw)), int(math.ceil(nh))), flags=cv.INTER_LANCZOS4)
 
-    # return True if image is upright, based on QR code coordinates
-    def imageIsUpright(self, page):
-        qrCode = self.decodeQR(page)
-        qrX = qrCode.rect.left
-        qrY = qrCode.rect.top
-        qrH = qrCode.rect.height
+    def image_is_upright(self, page):
+        """
+        Checks if an image is upright, based on the coordinates of the QR code
+        in the image
+
+        Args:
+            page (numpy.ndarray): An ndarray representing the test image.
+
+        Returns:
+            bool: True if image is upright, False otherwise.
+
+        """
+        qr_code = self.decode_qr(page)
+        qr_x = qr_code.rect.left
+        qr_y = qr_code.rect.top
+        qr_h = qr_code.rect.height
         w = page.shape[1]
         h = page.shape[0]
 
-        if 0 <= qrX <= (w / 4) and (h / 2) <= qrY <= h:
+        if 0 <= qr_x <= (w / 4) and (h / 2) <= qr_y <= h:
             return True
         else:
             return False
 
-    # rotate image by 90 degree increments until upright
-    def uprightImage(self, page):
-        if self.imageIsUpright(page):
+    def upright_image(self, page):
+        """
+        Rotates an image by 90 degree increments until it is upright.
+
+        Args:
+            page (numpy.ndarray): An ndarray representing the test image.
+
+        Returns:
+            page (numpy.ndarray): An ndarray representing the upright test 
+                image.
+
+        """
+        if self.image_is_upright(page):
             return page
         else:
             for _ in range(3):
-                page = self.rotateImage(page, 90)
-                if self.imageIsUpright(page):
+                page = self.rotate_image(page, 90)
+                if self.image_is_upright(page):
                     return page
         return None
 
-    # scale values in config dictionary based on width and height of the image 
-    # being graded
-    def scaleConfig(self, config, width, height):
+    def scale_config(self, config, width, height):
+        """
+        Scales the values in the config dictionary based on the width and height
+        of the image being graded.
+
+        Args:
+            config (dict): An unscaled coordinate mapping read from the 
+                configuration file.
+            width (int): Width of the actual test image.
+            height (int): Height of the actual test image.
+
+        Returns:
+            config (dict): A scaled coordinate mapping read from the 
+                configuration file. 
+
+        """
         x_scale = width / config['page_width']
         y_scale = height / config['page_height']
 
@@ -110,101 +179,118 @@ class Grader:
 
         return config
 
-    # encode .png image into a base64 string
-    def encodeImage(self, image):
+    def encode_image(self, image):
+        """
+        Encodes a .png image into a base64 string.
+
+        Args:
+            image (numpy.ndarray): An ndarray representing an image.
+
+        Returns:
+            str: A base64 string encoding of the image.
+
+        """
         _, binary = cv.imencode('.png', image)
         encoded = base64.b64encode(binary)
         return encoded.decode("utf-8")
 
     def grade(self, image_name):
+        """
+        Grades a test image and outputs the result to stdout as a JSON object.
+
+        Args:
+            image_name (str): Filepath to the test image to be graded.
+
+        """
         # for debugging
         #cv.namedWindow(image_name, cv.WINDOW_NORMAL)
         #cv.resizeWindow(image_name, 850, 1100)
 
-        # initialize dictionary to be returned
+        # Initialize dictionary to be returned.
         data = {'studentId' : '', "version" : '', 'answers' : [], 'unsure' : [],
         'images' : [], 'status' : 'success', 'error' : ''}
 
-        # load image 
+        # Load image. 
         im = cv.imread(image_name)
         if im is None:
             data['status'] = 'failure'
             data['error'] = 'Image', image_name, 'not found'
             return json.dump(data, sys.stdout);
 
-        # find test page within image
-        page = self.findPage(im)
+        # Find test page within image.
+        page = self.find_page(im)
         if page is None:
             data['status'] = 'failure'
             data['error'] = 'Page not found in', image_name
             return json.dump(data, sys.stdout);
 
-        # decode QR code, which will contain path to configuration file
-        qrCode = self.decodeQR(page)
-        if qrCode is None:
+        # Decode QR code, which will contain path to configuration file.
+        qr_code = self.decode_qr(page)
+        if qr_code is None:
             data['status'] = 'failure'
             data['error'] = 'QR code not found'
             return json.dump(data, sys.stdout);
         else:
-            qrData = qrCode.data.decode('utf-8')
-            qrData = os.path.dirname(os.path.abspath(sys.argv[0]))+'/config/6q.json'
+            qr_data = qr_code.data.decode('utf-8')
+            qr_data = os.path.dirname(os.path.abspath(sys.argv[0]))+'/config/6q.json'
 
-        # read config file into dictionary and scale values
+        # Read config file into dictionary and scale values.
         try:
             with open(os.path.dirname(os.path.abspath(sys.argv[0]))+'/config/6q.json') as file:
                 config = json.load(file)
-            config = self.scaleConfig(config, page.shape[1], page.shape[0])
+            config = self.scale_config(config, page.shape[1], page.shape[0])
         except FileNotFoundError:
             data['status'] = 'failure'
             data['error'] = 'Configuration file', qrData, 'not found'
             return json.dump(data, sys.stdout);
 
-        # rotate page until upright
-        page = self.uprightImage(page)
+        # Rotate page until upright.
+        page = self.upright_image(page)
         if page is None:
             data['status'] = 'failure'
             data['error'] = 'Could not upright page in', image_name
             return json.dump(data, sys.stdout);
 
-        # create test object
+        # Create test object.
         test = short_answer.ShortAnswerTest(page, config)
 
-        # find answers box and grade bubbles
-        answersContour = test.getAnswersContour()
-        if answersContour is None:
+        # Find answers box and grade bubbles.
+        answer_box = test.get_answer_box()
+        if answer_box is None:
             data['status'] = 'failure'
-            data['error'] = 'Answers contour not found'
+            data['error'] = 'Answer box not found'
         else:
-            test.gradeAnswers(answersContour)
-            data['answers'] = test.getAnswers()
+            test.grade_answers(answer_box)
+            data['answers'] = test.get_answers()
 
-        # find version box and grade bubbles
-        versionContour = test.getVersionContour()
-        if versionContour is None:
+        # Find version box and grade bubbles.
+        version_box = test.get_version_box()
+        if version_box is None:
             data['status'] = 'failure'
-            data['error'] = 'Version contour not found'
+            data['error'] = 'Version box not found'
         else:
-            test.gradeVersion(versionContour)
-            data['version'] = test.getVersion()
+            test.grade_version(version_box)
+            data['version'] = test.get_version()
 
-        # find id box and grade bubbles
-        idContour = test.getIdContour()
-        if idContour is None:
+        # Find id box and grade bubbles.
+        id_box = test.get_id_box()
+        if id_box is None:
             data['status'] = 'failure'
-            data['error'] = 'ID contour not found'
+            data['error'] = 'ID box not found'
         else:
-            test.gradeId(idContour)
-            data['studentId'] = test.getId()
+            test.grade_id(id_box)
+            data['studentId'] = test.get_id()
 
-        # encode image slices into base64
-        encodedImages = []
-        for image in test.getImages():
-            encodedImages.append(encodeImage(image))
+        # Encode image slices into base64 strings.
+        encoded_images = []
+        for image in test.get_images():
+            encoded_images.append(encode_image(image))
 
-        data['unsure'] = test.getUnsure()
-        data['images'] = encodedImages
+        data['unsure'] = test.get_unsure()
+        data['images'] = encoded_images
 
-        json.dump(data, sys.stdout);
+        # Output result as a JSON object to stdout.
+        json.dump(data, sys.stdout)
         
         # for debugging
         #for image in images:
@@ -221,13 +307,18 @@ class Grader:
         # for testing
         #return json.dumps(data)
 
+
 def main():
-    # parse the arguments
+    """
+    Parses command line arguments and grades the specified test.
+
+    """
+    # Parse the arguments.
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--image", required=True, help="path to the input image")
     args = vars(ap.parse_args())
 
-    # grade test
+    # Grade test.
     grader = Grader()
     return grader.grade(args["image"]) 
 
