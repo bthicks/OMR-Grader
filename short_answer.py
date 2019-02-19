@@ -353,7 +353,7 @@ class ShortAnswerTest:
                 if (total / area) > 0.8:
                     bubbled += chr(j + 65)
                 # Count as unsure. 
-                elif (total / area) > 0.7:
+                elif (total / area) > 0.75:
                     bubbled = '?'
                     #self.unsure.append(question + 1 + (2 * columnNum))
                     #self.images.append(self.getImageSlice(question + 1 + (2 * columnNum), minY, maxY, self.answersOffset))
@@ -451,7 +451,7 @@ class ShortAnswerTest:
             if (total / area) > 0.8:
                 bubbled += chr(j + 65)
             # Count as unsure.
-            elif (total / area > 0.7):
+            elif (total / area > 0.75):
                 bubbled = '?'
                 break;
 
@@ -500,7 +500,7 @@ class ShortAnswerTest:
                     bubbled = j
                     max_count = total
                 # Count as unsure.
-                elif (total / area > 0.7):
+                elif (total / area > 0.75):
                     bubbled = '?'
                     break;
 
