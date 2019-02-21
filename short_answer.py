@@ -334,6 +334,44 @@ class ShortAnswerTest:
 
         return None
 
+    def get_answer_bubbles(self, answer_box):
+        """
+        Finds and return bubbles within the answer box.
+
+        Args:
+            answer_box (numpy.ndarray): An ndarray representing the answer box 
+                in the test image.
+
+        Returns:
+            list: A list of contours for each bubble in the answer box.
+
+        """
+        # Find bubbles in question box.
+        _, contours, _ = cv.findContours(answer_box, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        bubbles = []
+        yValues = []
+        height = None
+
+        # Verify that bubbles are counted as external contours (instead of a
+        # box within the answer box). 
+        while (len(contours) == 1):
+            peri = cv.arcLength(contours[0], True)
+            approx = cv.approxPolyDP(contours[0], 0.02 * peri, True)
+            contours = four_point_transform(answer_box, approx.reshape(4, 2))
+            _, contours, _ = cv.findContours(contours, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+
+        for contour in contours:
+            (x, y, w, h) = cv.boundingRect(contour)
+            x += self.config['answer_x']
+            y += self.config['answer_y']
+
+            if (self.is_answer_bubble(x, y, w, h)):
+                bubbles.append(contour)
+                yValues.append(y)
+                height = h
+
+        return bubbles
+
     def grade_answer_column(self, column, column_num, answer_box):
         """
         Helper function to grade a single column of bubbles within the answer box.
@@ -389,29 +427,8 @@ class ShortAnswerTest:
                 in the test image.
 
         """
-        # Find bubbles in question box.
-        _, all_contours, _ = cv.findContours(answer_box, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-        bubbles = []
-        yValues = []
-        height = None
-
-        while (len(all_contours) == 1):
-            peri = cv.arcLength(all_contours[0], True)
-            approx = cv.approxPolyDP(all_contours[0], 0.02 * peri, True)
-            all_contours = four_point_transform(answer_box, approx.reshape(4, 2)) 
-            _, all_contours, _ = cv.findContours(all_contours, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-
-        for contour in all_contours:
-            (x, y, w, h) = cv.boundingRect(contour)
-            x += self.config['answer_x']
-            y += self.config['answer_y']
- 
-            if (self.is_answer_bubble(x, y, w, h)):
-                bubbles.append(contour)
-                yValues.append(y)
-                height = h
-
-        # Grade bubbles in question box.
+        # Get and grade bubbles in question box.
+        bubbles = self.get_answer_bubbles(answer_box)
         bubbles, _ = cutils.sort_contours(bubbles, method="left-to-right")
         third = int(len(bubbles) / 3)
         column_1 = bubbles[0 : third]
@@ -430,6 +447,32 @@ class ShortAnswerTest:
         column_3, _ = cutils.sort_contours(column_3, method="top-to-bottom")
         self.grade_answer_column(column_3, 2, answer_box)
 
+    def get_version_bubbles(self, version_box):
+        """
+        Finds and return bubbles within the version box.
+
+        Args:
+            version_box (numpy.ndarray): An ndarray representing the version box 
+                in the test image.
+
+        Returns:
+            list: A list of contours for each bubble in the version box.
+
+        """
+        # Find bubbles in version box.
+        _, contours, _ = cv.findContours(version_box, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        bubbles = []
+
+        for contour in contours:
+            (x, y, w, h) = cv.boundingRect(contour)
+            x += self.config['version_x']
+            y += self.config['version_y']
+
+            if (self.is_version_bubble(x, y, w, h)):
+                bubbles.append(contour)
+
+        return bubbles
+
     def grade_version(self, version_box):
         """
         Finds and grades bubbles within the version box.
@@ -439,19 +482,8 @@ class ShortAnswerTest:
                 in the test image.
 
         """
-        # Find bubbles in version box.
-        _, all_contours, _ = cv.findContours(version_box, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-        bubbles = []
-
-        for contour in all_contours:
-            (x, y, w, h) = cv.boundingRect(contour)
-            x += self.config['version_x']
-            y += self.config['version_y']
-
-            if (self.is_version_bubble(x, y, w, h)):
-                bubbles.append(contour)
-
-        # Grade bubbles in version box.
+        # Get and grade bubbles in version box.
+        bubbles = self.get_version_bubbles(version_box)
         bubbles, _ = cutils.sort_contours(bubbles, method="left-to-right")
         bubbled = ""
 
@@ -473,13 +505,16 @@ class ShortAnswerTest:
 
         self.version = bubbled
 
-    def grade_id(self, id_box):
+    def get_id_bubbles(self, id_box):
         """
-        Finds and grades bubbles within the student id box.
+        Finds and return bubbles within the student id box.
 
         Args:
             id_box (numpy.ndarray): An ndarray representing the id box in the 
                 test image.
+
+        Returns:
+            list: A list of contours for each bubble in the student id box.
 
         """
         # Find bubbles in id box.
@@ -494,7 +529,19 @@ class ShortAnswerTest:
             if (self.is_id_bubble(x, y, w, h)):
                 bubbles.append(contour)
 
-        # Grade bubbles in id box.
+        return bubbles
+
+    def grade_id(self, id_box):
+        """
+        Finds and grades bubbles within the student id box.
+
+        Args:
+            id_box (numpy.ndarray): An ndarray representing the id box in the 
+                test image.
+
+        """
+        # Get and grade bubbles in id box.
+        bubbles = self.get_id_bubbles(id_box)
         bubbles, _ = cutils.sort_contours(bubbles, method="left-to-right")
 
         # Each field has 10 possibilities so loop in batches of 10.
