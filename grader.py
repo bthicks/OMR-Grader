@@ -284,7 +284,7 @@ class Grader:
         # Encode image slices into base64 strings.
         encoded_images = []
         for image in test.get_images():
-            encoded_images.append(encode_image(image))
+            encoded_images.append(self.encode_image(image))
 
         data['unsure'] = test.get_unsure()
         data['images'] = encoded_images

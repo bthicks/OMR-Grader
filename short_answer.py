@@ -225,20 +225,28 @@ class ShortAnswerTest:
         else:
             return False
 
-    # crop image slice for undetermined questions
-    """
-    def get_image_slice(self, question_num, minY, maxY, offset):
-        diff = int((maxY - minY) / 2)
+    def get_image_slice(self, x_min, x_max, y_min, y_max):
+        """
+        Crops and returns image slice for undetermined questions.
 
-        if 1 <= questionNum <= 2:
-            return self.page[(offset + minY + diff * (questionNum - 1)) : (offset + minY + diff * questionNum), 160 : 660]
-        elif 3 <= questionNum <= 4:
-            return self.page[(offset + minY + diff * (questionNum - 3)) : (offset + minY + diff * (questionNum - 2)), 930 : 1430]
-        elif 5 <= questionNum <= 6:
-            return self.page[(offset + minY + diff * (questionNum - 5)) : (offset + minY + diff * (questionNum - 4)), 1690 : 2190]
-        else:
-            return None
-    """
+        Args:
+            x_min (float): Minimum x coordinate.
+            x_max (float): Maximum x coordinate.
+            y_min (float): Minimum y coordinate.
+            y_max (float): Maximum y coordinate.
+
+        Returns:
+            numpy.ndarray: An ndarray representing the specified question in the
+                test image.
+
+        """
+        # Stretched x and y bounaries, by somewhat arbitrary numbers, to 
+        # encompass entire question.
+        x_min -= self.config['x_error']
+        x_max += (self.config['bubble_width'] + self.config['x_error'])
+        y_max += (self.config['bubble_height'] * 1.2)
+
+        return self.page[int(y_min) : int(y_max), int(x_min) : int(x_max)]
 
     def get_answer_box(self):
         """
@@ -326,7 +334,7 @@ class ShortAnswerTest:
 
         return None
 
-    def grade_answer_column(self, column, answer_box):
+    def grade_answer_column(self, column, column_num, answer_box):
         """
         Helper function to grade a single column of bubbles within the answer box.
 
@@ -340,7 +348,18 @@ class ShortAnswerTest:
         for (question, i) in enumerate(np.arange(0, len(column), 5)):
             contours, _ = cutils.sort_contours(column[i:i + 5])
             bubbled = ""
+            bounding_rects = []
 
+            # Calculate x and y boundaries of this question for image slicing.
+            for (j, c) in enumerate(contours):
+                bounding_rects.append(cv.boundingRect(c))
+
+            x_min = min(bounding_rects, key=lambda x: x[0])[0] + self.config['answer_x']
+            x_max = max(bounding_rects, key=lambda x: x[0])[0] + self.config['answer_x']
+            y_min = min(bounding_rects, key=lambda x: x[1])[1] + self.config['answer_y']
+            y_max = max(bounding_rects, key=lambda x: x[1])[1] + self.config['answer_y']
+
+            # For each bubble in this question.
             for (j, c) in enumerate(contours):
                 mask = np.zeros(answer_box.shape, dtype="uint8")
                 cv.drawContours(mask, [c], -1, 255, -1)
@@ -355,8 +374,8 @@ class ShortAnswerTest:
                 # Count as unsure. 
                 elif (total / area) > 0.75:
                     bubbled = '?'
-                    #self.unsure.append(question + 1 + (2 * columnNum))
-                    #self.images.append(self.getImageSlice(question + 1 + (2 * columnNum), minY, maxY, self.answersOffset))
+                    self.unsure.append(question + 1 + (2 * column_num))
+                    self.images.append(self.get_image_slice(x_min, x_max, y_min, y_max))
                     break
 
             self.answers.append(bubbled)
@@ -392,9 +411,6 @@ class ShortAnswerTest:
                 yValues.append(y)
                 height = h
 
-        #minY = yValues[len(yValues) - 1] - int(height * 0.1)
-        #maxY = yValues[0] + height + int(height * 0.25)
-
         # Grade bubbles in question box.
         bubbles, _ = cutils.sort_contours(bubbles, method="left-to-right")
         third = int(len(bubbles) / 3)
@@ -404,15 +420,15 @@ class ShortAnswerTest:
 
         # Grade questions 1-2.
         column_1, _ = cutils.sort_contours(column_1, method="top-to-bottom")
-        self.grade_answer_column(column_1, answer_box)
+        self.grade_answer_column(column_1, 0, answer_box)
 
         # Grade questions 3-4.
         column_2, _ = cutils.sort_contours(column_2, method="top-to-bottom")
-        self.grade_answer_column(column_2, answer_box)
+        self.grade_answer_column(column_2, 1, answer_box)
 
         # Grade questions 5-6.
         column_3, _ = cutils.sort_contours(column_3, method="top-to-bottom")
-        self.grade_answer_column(column_3, answer_box)
+        self.grade_answer_column(column_3, 2, answer_box)
 
     def grade_version(self, version_box):
         """
@@ -467,10 +483,10 @@ class ShortAnswerTest:
 
         """
         # Find bubbles in id box.
-        _, all_contours, _ = cv.findContours(id_box, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        _, contours, _ = cv.findContours(id_box, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         bubbles = []
 
-        for contour in all_contours:
+        for contour in contours:
             (x, y, w, h) = cv.boundingRect(contour)
             x += self.config['id_x']
             y += self.config['id_y']
