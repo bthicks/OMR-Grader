@@ -1,6 +1,6 @@
 # OMR Grader
 
-Grader for bubble sheet multiple choice tests using Optical Mark Recognition, Python, and OpenCV.
+Grader for bubble sheet multiple choice tests using Optical Mark Recognition, Python, and OpenCV. Images should be 300 dpi for maximum accuracy.
 
 ## Getting Started
 
