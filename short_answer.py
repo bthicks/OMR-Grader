@@ -18,63 +18,21 @@ class ShortAnswerTest:
 
         """
         self.page = page
-        self.answers = []
-        self.unsure = []
-        self.images = []
-        self.version = None
-        self.id = ""
-        self.answers_offset = None
         self.config = config
 
-    def get_answers(self):
-        """
-        Getter for the test answers.
+        self.answers = []
+        self.unsure_answers = []
+        self.answer_images = []
+        self.answer_status = 0
 
-        Returns:
-            answers (list): A list of graded answers.
+        self.version = None
+        self.version_image = None
+        self.version_status = 0
 
-        """
-        return self.answers
-
-    def get_unsure(self):
-        """
-        Getter for the unsure test question numbers.
-
-        Returns:
-            answers (list): A list of unsure answer numbers.
-
-        """
-        return self.unsure
-
-    def get_images(self):
-        """
-        Getter for the unsure test question image slices.
-
-        Returns:
-            images (list): A list of test question image slices.
-
-        """
-        return self.images
-
-    def get_version(self):
-        """
-        Getter for the test version.
-
-        Returns:
-            version (str): The test version.
-
-        """
-        return self.version
-
-    def get_id(self):
-        """
-        Getter for the student id number.
-
-        Returns:
-            id (str): The student id number.
-
-        """
-        return self.id
+        self.id = ""
+        self.unsure_id = []
+        self.id_images = []
+        self.id_status = 0
 
     def is_answer_bubble(self, x, y, w, h):
         """
@@ -318,7 +276,6 @@ class ShortAnswerTest:
             (x, y, _, _) = cv.boundingRect(contour)
 
             if (self.is_answer_box(x, y)):
-                (_, self.answers_offset, _, _) = cv.boundingRect(contour)            
                 peri = cv.arcLength(contour, True)
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
                 contour = four_point_transform(threshold, approx.reshape(4, 2))
@@ -458,8 +415,9 @@ class ShortAnswerTest:
                 # Count as unsure. 
                 elif (total / area) > 0.75:
                     bubbled = '?'
-                    self.unsure.append(question + 1 + (2 * column_num))
-                    self.images.append(self.get_answer_slice(x_min, x_max, y_min, y_max))
+                    self.unsure_answers.append(question + 1 + (2 * column_num))
+                    self.answer_images.append(self.get_answer_slice(x_min, x_max, y_min, y_max))
+                    self.answer_status = 1
                     break
 
             self.answers.append(bubbled)
@@ -471,6 +429,9 @@ class ShortAnswerTest:
         Args:
             answer_box (numpy.ndarray): An ndarray representing the answer box 
                 in the test image.
+
+        list: A list containing the answers, unsure questions, image slices, and
+                status
 
         """
         # Get and grade bubbles in question box.
@@ -492,6 +453,8 @@ class ShortAnswerTest:
         # Grade questions 5-6.
         column_3, _ = cutils.sort_contours(column_3, method="top-to-bottom")
         self.grade_answer_column(column_3, 2, answer_box)
+
+        return (self.answers, self.unsure_answers, self.answer_images, self.answer_status)
 
     def get_version_bubbles(self, version_box):
         """
@@ -527,6 +490,8 @@ class ShortAnswerTest:
             version_box (numpy.ndarray): An ndarray representing the version box
                 in the test image.
 
+        list: A list containing the version, image slice, and status
+
         """
         # Get and grade bubbles in version box.
         bubbles = self.get_version_bubbles(version_box)
@@ -557,10 +522,13 @@ class ShortAnswerTest:
             # Count as unsure.
             elif (total / area > 0.75):
                 bubbled = '?'
-                self.images.append(self.get_version_slice(x_min, x_max, y_min, y_max))
+                self.version_image = self.get_version_slice(x_min, x_max, y_min, y_max)
+                self.version_status = 1
                 break;
 
         self.version = bubbled
+
+        return (self.version, self.version_image, self.version_status)
 
     def get_id_bubbles(self, id_box):
         """
@@ -595,6 +563,10 @@ class ShortAnswerTest:
         Args:
             id_box (numpy.ndarray): An ndarray representing the id box in the 
                 test image.
+
+        Returns:
+            list: A list containing the id, unsure columns, image slices, and
+                status
 
         """
         # Get and grade bubbles in id box.
@@ -632,11 +604,15 @@ class ShortAnswerTest:
                 # Count as unsure.
                 elif (total / area > 0.75):
                     bubbled = '?'
-                    self.images.append(self.get_id_slice(x_min, x_max, y_min, y_max))
+                    self.unsure_id.append(q)
+                    self.id_images.append(self.get_id_slice(x_min, x_max, y_min, y_max))
+                    self.id_status = 1
                     break;
 
             if bubbled is None:
                 bubbled = '-'
 
             self.id += str(bubbled)
+
+        return (self.id, self.unsure_id, self.id_images, self.id_status)
 

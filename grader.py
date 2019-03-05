@@ -190,9 +190,12 @@ class Grader:
             str: A base64 string encoding of the image.
 
         """
-        _, binary = cv.imencode('.png', image)
-        encoded = base64.b64encode(binary)
-        return encoded.decode("utf-8")
+        if (image is None):
+            return None
+        else:
+            _, binary = cv.imencode('.png', image)
+            encoded = base64.b64encode(binary)
+            return encoded.decode("utf-8")
 
     def grade(self, image_name):
         """
@@ -207,27 +210,46 @@ class Grader:
         #cv.resizeWindow(image_name, 850, 1100)
 
         # Initialize dictionary to be returned.
-        data = {'studentId' : '', "version" : '', 'answers' : [], 'unsure' : [],
-        'images' : [], 'status' : 'success', 'error' : ''}
+        data = {
+            'answers' : {
+                'bubbled' : [],
+                'unsure' : [],
+                'images' : [],
+                'status' : 0
+            },
+            'version' : {
+                'bubbled' : [],
+                'image' : '',
+                'status' : 0
+            },
+            'id' : {
+                'bubbled' : [],
+                'unsure' : [],
+                'images' : [],
+                'status' : 0
+            },
+            'status' : 0,
+            'error' : ''
+        }
 
         # Load image. 
         im = cv.imread(image_name)
         if im is None:
-            data['status'] = 'failure'
+            data['status'] = 1
             data['error'] = 'Image', image_name, 'not found'
             return json.dump(data, sys.stdout);
 
         # Find test page within image.
         page = self.find_page(im)
         if page is None:
-            data['status'] = 'failure'
+            data['status'] = 1
             data['error'] = 'Page not found in', image_name
             return json.dump(data, sys.stdout);
 
         # Decode QR code, which will contain path to configuration file.
         qr_code = self.decode_qr(page)
         if qr_code is None:
-            data['status'] = 'failure'
+            data['status'] = 1
             data['error'] = 'QR code not found'
             return json.dump(data, sys.stdout);
         else:
@@ -240,14 +262,14 @@ class Grader:
                 config = json.load(file)
             config = self.scale_config(config, page.shape[1], page.shape[0])
         except FileNotFoundError:
-            data['status'] = 'failure'
+            data['status'] = 1
             data['error'] = 'Configuration file', qrData, 'not found'
             return json.dump(data, sys.stdout);
 
         # Rotate page until upright.
         page = self.upright_image(page)
         if page is None:
-            data['status'] = 'failure'
+            data['status'] = 1
             data['error'] = 'Could not upright page in', image_name
             return json.dump(data, sys.stdout);
 
@@ -257,49 +279,48 @@ class Grader:
         # Find answers box and grade bubbles.
         answer_box = test.get_answer_box()
         if answer_box is None:
-            data['status'] = 'failure'
+            data['status'] = 1
             data['error'] = 'Answer box not found'
         else:
-            test.grade_answers(answer_box)
-            data['answers'] = test.get_answers()
+            answer_data = test.grade_answers(answer_box)
+
+            data['answers']['bubbled'] = answer_data[0]
+            data['answers']['unsure'] = answer_data[1]
+            data['answers']['status'] = answer_data[3]
+
+            for image in answer_data[2]:
+                data['answers']['images'].append(self.encode_image(image))
 
         # Find version box and grade bubbles.
         version_box = test.get_version_box()
         if version_box is None:
-            data['status'] = 'failure'
+            data['status'] = 1
             data['error'] = 'Version box not found'
         else:
-            test.grade_version(version_box)
-            data['version'] = test.get_version()
+            version_data = test.grade_version(version_box)
+
+            data['version']['bubbled'] = version_data[0]
+            data['version']['image'] = self.encode_image(version_data[1])
+            data['version']['status'] = version_data[2]
 
         # Find id box and grade bubbles.
         id_box = test.get_id_box()
         if id_box is None:
-            data['status'] = 'failure'
+            data['status'] = 1
             data['error'] = 'ID box not found'
         else:
-            test.grade_id(id_box)
-            data['studentId'] = test.get_id()
+            id_data = test.grade_id(id_box)
 
-        # Encode image slices into base64 strings.
-        encoded_images = []
-        for image in test.get_images():
-            encoded_images.append(self.encode_image(image))
+            data['id']['bubbled'] = id_data[0]
+            data['id']['unsure'] = id_data[1]
+            data['id']['status'] = id_data[3]
 
-        data['unsure'] = test.get_unsure()
-        data['images'] = encoded_images
+            for image in id_data[2]:
+                data['id']['images'].append(self.encode_image(image))
 
         # Output result as a JSON object to stdout.
         json.dump(data, sys.stdout)
         
-        # for debugging
-        #print(data['answers'])
-        #print(data['version'])
-        #print(data['studentId'])
-        #print(data['unsure'])
-        #print(data['status'])
-        #print(data['error'])
-
         # for testing
         #return json.dumps(data)
 
