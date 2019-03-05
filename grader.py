@@ -293,10 +293,6 @@ class Grader:
         json.dump(data, sys.stdout)
         
         # for debugging
-        #for image in images:
-        #    cv.imshow("img", image)
-        #    cv.waitKey()
-
         #print(data['answers'])
         #print(data['version'])
         #print(data['studentId'])

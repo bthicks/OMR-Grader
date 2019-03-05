@@ -225,9 +225,9 @@ class ShortAnswerTest:
         else:
             return False
 
-    def get_image_slice(self, x_min, x_max, y_min, y_max):
+    def get_answer_slice(self, x_min, x_max, y_min, y_max):
         """
-        Crops and returns image slice for undetermined questions.
+        Crops and returns image slice for undetermined answers.
 
         Args:
             x_min (float): Minimum x coordinate.
@@ -241,12 +241,62 @@ class ShortAnswerTest:
 
         """
         # Stretched x and y bounaries, by somewhat arbitrary numbers, to 
-        # encompass entire question.
-        x_min -= self.config['x_error']
+        # encompass entire row.
+        x_min -= (self.config['x_error'] * 3)
         x_max += (self.config['bubble_width'] + self.config['x_error'])
+        y_min -= (self.config['bubble_height'] * 0.2)
         y_max += (self.config['bubble_height'] * 1.2)
 
         return self.page[int(y_min) : int(y_max), int(x_min) : int(x_max)]
+
+    def get_version_slice(self, x_min, x_max, y_min, y_max):
+        """
+        Crops and returns image slice for undetermined version.
+
+        Args:
+            x_min (float): Minimum x coordinate.
+            x_max (float): Maximum x coordinate.
+            y_min (float): Minimum y coordinate.
+            y_max (float): Maximum y coordinate.
+
+        Returns:
+            numpy.ndarray: An ndarray representing the version box in the test
+                image.
+
+        """
+        # Stretched x and y bounaries, by somewhat arbitrary numbers, to 
+        # encompass entire row.
+        x_min -= (self.config['x_error'] * 0.6)
+        x_max += (self.config['bubble_width'] + self.config['x_error'])
+        y_min -= (self.config['y_error'] * 0.2)
+        y_max += (self.config['y_error'] * 2.0)
+
+        return self.page[int(y_min) : int(y_max), int(x_min) : int(x_max)]
+
+    def get_id_slice(self, x_min, x_max, y_min, y_max):
+        """
+        Crops and returns image slice for undetermined id columns.
+
+        Args:
+            x_min (float): Minimum x coordinate.
+            x_max (float): Maximum x coordinate.
+            y_min (float): Minimum y coordinate.
+            y_max (float): Maximum y coordinate.
+
+        Returns:
+            numpy.ndarray: An ndarray representing the specified id column in 
+                the test image.
+
+        """
+        # Stretched x and y bounaries, by somewhat arbitrary numbers, to 
+        # encompass entire column.
+        x_min -= (self.config['x_error'] * 0.6)
+        x_max += (self.config['bubble_width'] + self.config['x_error'])
+        y_min -= (self.config['y_error'] * 0.2)
+        y_max += (self.config['y_error'] * 2.5)
+
+        return self.page[int(y_min) : int(y_max), int(x_min) : int(x_max)]
+
 
     def get_answer_box(self):
         """
@@ -349,8 +399,6 @@ class ShortAnswerTest:
         # Find bubbles in question box.
         _, contours, _ = cv.findContours(answer_box, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         bubbles = []
-        yValues = []
-        height = None
 
         # Verify that bubbles are counted as external contours (instead of a
         # box within the answer box). 
@@ -367,8 +415,6 @@ class ShortAnswerTest:
 
             if (self.is_answer_bubble(x, y, w, h)):
                 bubbles.append(contour)
-                yValues.append(y)
-                height = h
 
         return bubbles
 
@@ -413,7 +459,7 @@ class ShortAnswerTest:
                 elif (total / area) > 0.75:
                     bubbled = '?'
                     self.unsure.append(question + 1 + (2 * column_num))
-                    self.images.append(self.get_image_slice(x_min, x_max, y_min, y_max))
+                    self.images.append(self.get_answer_slice(x_min, x_max, y_min, y_max))
                     break
 
             self.answers.append(bubbled)
@@ -486,6 +532,16 @@ class ShortAnswerTest:
         bubbles = self.get_version_bubbles(version_box)
         bubbles, _ = cutils.sort_contours(bubbles, method="left-to-right")
         bubbled = ""
+        bounding_rects = []
+
+        # Calculate x and y boundaries of this column for image slicing.
+        for (j, c) in enumerate(bubbles):
+            bounding_rects.append(cv.boundingRect(c))
+
+        x_min = min(bounding_rects, key=lambda x: x[0])[0] + self.config['version_x']
+        x_max = max(bounding_rects, key=lambda x: x[0])[0] + self.config['version_x']
+        y_min = min(bounding_rects, key=lambda x: x[1])[1] + self.config['version_y']
+        y_max = max(bounding_rects, key=lambda x: x[1])[1] + self.config['version_y']
 
         for (j, c) in enumerate(bubbles):
             mask = np.zeros(version_box.shape, dtype="uint8")
@@ -501,6 +557,7 @@ class ShortAnswerTest:
             # Count as unsure.
             elif (total / area > 0.75):
                 bubbled = '?'
+                self.images.append(self.get_version_slice(x_min, x_max, y_min, y_max))
                 break;
 
         self.version = bubbled
@@ -549,6 +606,16 @@ class ShortAnswerTest:
             contours, _ = cutils.sort_contours(bubbles[i:i + 10], method="top-to-bottom")
             bubbled = None
             max_count = -float("inf")
+            bounding_rects = []
+
+            # Calculate x and y boundaries of this column for image slicing.
+            for (j, c) in enumerate(contours):
+                bounding_rects.append(cv.boundingRect(c))
+
+            x_min = min(bounding_rects, key=lambda x: x[0])[0] + self.config['id_x']
+            x_max = max(bounding_rects, key=lambda x: x[0])[0] + self.config['id_x']
+            y_min = min(bounding_rects, key=lambda x: x[1])[1] + self.config['id_y']
+            y_max = max(bounding_rects, key=lambda x: x[1])[1] + self.config['id_y']
 
             for (j, c) in enumerate(contours):
                 mask = np.zeros(id_box.shape, dtype="uint8")
@@ -565,6 +632,7 @@ class ShortAnswerTest:
                 # Count as unsure.
                 elif (total / area > 0.75):
                     bubbled = '?'
+                    self.images.append(self.get_id_slice(x_min, x_max, y_min, y_max))
                     break;
 
             if bubbled is None:
