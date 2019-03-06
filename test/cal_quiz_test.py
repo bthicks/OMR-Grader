@@ -8,7 +8,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_01(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_01.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_01.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['D', 'B', '', '', '', ''])
@@ -16,7 +16,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_02(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_02.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_02.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'C', '', '', '', ''])
@@ -24,7 +24,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_03(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_03.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_03.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -32,7 +32,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_04(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_04.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_04.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -40,7 +40,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_05(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_05.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_05.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -48,7 +48,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_06(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_06.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_06.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -56,7 +56,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_07(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_07.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_07.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -64,7 +64,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_08(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_08.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_08.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -72,7 +72,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_09(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_09.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_09.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -80,7 +80,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_10(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_10.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_10.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -88,7 +88,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_11(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_11.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_11.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'A', '', '', '', ''])
@@ -96,7 +96,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_12(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_12.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_12.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -104,7 +104,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_13(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_13.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_13.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -112,7 +112,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_14(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_14.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_14.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'B', '', '', '', ''])
@@ -120,7 +120,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_15(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_15.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_15.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -128,7 +128,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_16(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_16.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_16.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'B', '', '', '', ''])
@@ -136,7 +136,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_17(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_17.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_17.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'C', 'B', 'B', 'B', 'B'])
@@ -144,7 +144,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_18(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_18.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_18.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -152,7 +152,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_19(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_19.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_19.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'B', '', '', '', ''])
@@ -160,7 +160,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_20(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/calQuiz_Page_20.png")
+        jsonData = grader.grade("calQuiz/calQuiz_Page_20.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -168,7 +168,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_01(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_01.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_01.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', 'B', '', '', ''])
@@ -176,7 +176,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_02(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_02.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_02.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', '', 'B', '', '', ''])
@@ -184,7 +184,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_03(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_03.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_03.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'A', 'B', '', '', ''])
@@ -192,7 +192,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_04(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_04.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_04.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -200,7 +200,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_05(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_05.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_05.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', '', '', '', ''])
@@ -208,7 +208,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_06(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_06.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_06.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'B', '', '', ''])
@@ -216,7 +216,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_07(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_07.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_07.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'C', '', '', ''])
@@ -224,7 +224,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_08(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_08.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_08.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', 'B', '', '', ''])
@@ -232,7 +232,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_09(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_09.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_09.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['E', 'E', 'B', '', '', ''])
@@ -240,7 +240,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_10(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_10.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_10.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'E', 'B', '', '', ''])
@@ -248,7 +248,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_11(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_11.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_11.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'B', '', '', ''])
@@ -256,7 +256,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_12(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_12.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_12.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', '', 'A', '', '', ''])
@@ -264,7 +264,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_13(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_13.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_13.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'B', '', '', ''])
@@ -272,7 +272,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_14(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_14.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_14.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -280,7 +280,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_15(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_15.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_15.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'C', 'C', '', '', ''])
@@ -288,7 +288,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_16(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_16.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_16.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'B', '', '', ''])
@@ -296,7 +296,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_17(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_17.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_17.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -304,7 +304,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_18(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_18.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_18.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'E', 'B', '', '', ''])
@@ -312,7 +312,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_19(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_19.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_19.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'B', '', '', ''])
@@ -320,7 +320,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_20(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_20.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_20.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'C', 'B', '', '', ''])
@@ -328,7 +328,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_21(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_21.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_21.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'B', '', '', ''])
@@ -336,7 +336,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_22(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_22.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_22.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'A', 'B', '', '', ''])
@@ -344,7 +344,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_23(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_23.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_23.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'C', '', '', ''])
@@ -352,7 +352,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_24(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_24.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_24.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'B', '', '', ''])
@@ -360,7 +360,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_25(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_25.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_25.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'C', '', '', ''])
@@ -368,7 +368,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_26(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_26.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_26.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'B', '', '', ''])
@@ -376,7 +376,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_27(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_27.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_27.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'B', '', '', ''])
@@ -384,7 +384,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_2_28(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_28.png")
+        jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_28.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'A', 'B', '', '', ''])
@@ -392,7 +392,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_05(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-05.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-05.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -401,7 +401,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_06(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-06.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-06.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'B', '', '', '', ''])
@@ -410,7 +410,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_07(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-07.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-07.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -419,7 +419,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_08(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-08.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-08.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['D', 'A', '', '', '', ''])
@@ -428,7 +428,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_09(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-09.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-09.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -437,7 +437,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_10(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-10.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-10.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'B', '', '', '', ''])
@@ -446,7 +446,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_11(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-11.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-11.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -455,7 +455,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_12(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-12.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-12.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -464,7 +464,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_13(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-13.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-13.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -473,7 +473,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_14(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-14.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-14.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -482,7 +482,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_15(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-15.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-15.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -491,7 +491,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_16(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-16.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-16.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -500,7 +500,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_17(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-17.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-17.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -509,7 +509,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_18(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-18.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-18.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -518,7 +518,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_19(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-19.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-19.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -527,7 +527,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_20(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-20.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-20.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -536,7 +536,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_21(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-21.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-21.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -545,7 +545,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_22(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-22.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-22.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['E', 'B', '', '', '', ''])
@@ -554,7 +554,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_23(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-23.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-23.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -563,7 +563,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_24(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-24.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-24.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -572,7 +572,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_25(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-25.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-25.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -581,7 +581,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_26(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-26.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-26.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -590,7 +590,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_27(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-27.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-27.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -599,7 +599,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_28(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-28.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-28.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['E', 'B', '', '', '', ''])
@@ -608,7 +608,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_29(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-29.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-29.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -617,7 +617,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_30(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-30.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-30.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -626,7 +626,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_31(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-31.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-31.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['D', 'C', '', '', '', ''])
@@ -635,7 +635,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_32(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-32.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-32.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'B', '', '', '', ''])
@@ -644,7 +644,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_33(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-33.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-33.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'B', '', '', '', ''])
@@ -653,7 +653,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_34(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-34.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-34.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -662,7 +662,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_35(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-35.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-35.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -671,7 +671,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_36(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-36.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-36.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -680,7 +680,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_37(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-37.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-37.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -689,7 +689,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_38(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-38.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-38.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -698,7 +698,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_39(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-39.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-39.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -707,7 +707,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_40(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-40.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-40.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['B', 'C', '', '', '', ''])
@@ -716,7 +716,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_41(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-41.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-41.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'B', '', '', '', ''])
@@ -725,7 +725,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_3_42(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz3/image-42.png")
+        jsonData = grader.grade("calQuiz/quiz3/image-42.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
@@ -734,7 +734,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_4_01(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz4/image-01.png")
+        jsonData = grader.grade("calQuiz/quiz4/image-01.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['A', 'B', '', '', '', ''])
@@ -742,7 +742,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_4_02(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz4/image-02.png")
+        jsonData = grader.grade("calQuiz/quiz4/image-02.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
@@ -750,7 +750,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_4_03(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz4/image-03.png")
+        jsonData = grader.grade("calQuiz/quiz4/image-03.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
@@ -758,7 +758,7 @@ class CalQuizTest(unittest.TestCase):
 
     def test_quiz_4_04(self):
         grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz4/image-04.png")
+        jsonData = grader.grade("calQuiz/quiz4/image-04.png", True)
         data = json.loads(jsonData)
 
         self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])

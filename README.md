@@ -42,7 +42,7 @@ $ pip3 install pyzbar
 
 ## Running
 
-`$ python grader.py --image [path to image]`
+`$ python grader.py -i path_to_image [-v]`
 
 ## Acknowledgements
 * Adrian Rosebrock's tutorial "Bubble sheet multiple choice scanner and test grader using OMR, Python, OpenCV"

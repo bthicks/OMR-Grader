@@ -197,7 +197,7 @@ class Grader:
             encoded = base64.b64encode(binary)
             return encoded.decode("utf-8")
 
-    def grade(self, image_name):
+    def grade(self, image_name, verbose_mode):
         """
         Grades a test image and outputs the result to stdout as a JSON object.
 
@@ -274,7 +274,7 @@ class Grader:
             return json.dump(data, sys.stdout);
 
         # Create test object.
-        test = short_answer.ShortAnswerTest(page, config)
+        test = short_answer.ShortAnswerTest(page, config, verbose_mode)
 
         # Find answers box and grade bubbles.
         answer_box = test.get_answer_box()
@@ -321,7 +321,7 @@ class Grader:
         # Output result as a JSON object to stdout.
         json.dump(data, sys.stdout)
         
-        # for testing
+        # For testing.
         #return json.dumps(data)
 
 
@@ -332,12 +332,13 @@ def main():
     """
     # Parse the arguments.
     ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--image", required=True, help="path to the input image")
+    ap.add_argument('-i', '--image', required=True, help='path to the input image')
+    ap.add_argument('-v', action='store_true', required=False, help='enable verbose mode')
     args = vars(ap.parse_args())
 
     # Grade test.
     grader = Grader()
-    return grader.grade(args["image"]) 
+    return grader.grade(args['image'], args['v']) 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -8,7 +8,7 @@ from imutils.perspective import four_point_transform
 
 class ShortAnswerTest:
 
-    def __init__(self, page, config):
+    def __init__(self, page, config, verbose_mode):
         """
         Constructor for a short answer test.
 
@@ -19,6 +19,7 @@ class ShortAnswerTest:
         """
         self.page = page
         self.config = config
+        self.verbose_mode = verbose_mode
 
         self.answers = []
         self.unsure_answers = []
@@ -420,6 +421,9 @@ class ShortAnswerTest:
                     self.answer_status = 1
                     break
 
+            if (self.verbose_mode == True and bubbled != '?'):
+                self.answer_images.append(self.get_answer_slice(x_min, x_max, y_min, y_max))
+
             self.answers.append(bubbled)
 
     def grade_answers(self, answer_box):
@@ -526,6 +530,9 @@ class ShortAnswerTest:
                 self.version_status = 1
                 break;
 
+        if (self.verbose_mode == True and bubbled != '?'):
+            self.version_image = self.get_version_slice(x_min, x_max, y_min, y_max)
+
         self.version = bubbled
 
         return (self.version, self.version_image, self.version_status)
@@ -608,6 +615,9 @@ class ShortAnswerTest:
                     self.id_images.append(self.get_id_slice(x_min, x_max, y_min, y_max))
                     self.id_status = 1
                     break;
+
+            if (self.verbose_mode == True and bubbled != '?'):
+                self.id_images.append(self.get_id_slice(x_min, x_max, y_min, y_max))
 
             if bubbled is None:
                 bubbled = '-'
