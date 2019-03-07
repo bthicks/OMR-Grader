@@ -430,10 +430,10 @@ class ShortAnswerTest:
                 area = math.pi * ((min(w, h) / 2) ** 2)
 
                 # If ~50% bubbled, count as marked.
-                if (total / area) > 0.8:
+                if ((total / area) > 0.8):
                     bubbled += chr(j + 65)
                 # Count as unsure. 
-                elif (total / area) > 0.75:
+                elif ((total / area) > 0.75):
                     bubbled = '?'
                     self.unsure_answers.append(i + 1 + (2 * column_num))
                     self.answer_images.append(self.get_answer_slice(x_min, x_max, y_min, y_max))
@@ -553,10 +553,10 @@ class ShortAnswerTest:
             area = math.pi * ((min(w, h) / 2) ** 2)
 
             # If ~50% bubbled, count as marked.
-            if (total / area) > 0.8:
+            if ((total / area) > 0.8):
                 bubbled += chr(j + 65)
             # Count as unsure.
-            elif (total / area > 0.75):
+            elif ((total / area > 0.75)):
                 bubbled = '?'
                 self.version_image = self.get_version_slice(x_min, x_max, y_min, y_max)
                 self.version_status = 1
@@ -637,7 +637,7 @@ class ShortAnswerTest:
                 area = math.pi * ((min(w, h) / 2) ** 2)
 
                 # If ~50% bubbled, count as marked.
-                if (total / area) > 0.8 and total > max_count:
+                if ((total / area) > 0.8 and total > max_count):
                     bubbled = j
                     max_count = total
                 # Count as unsure.
@@ -651,7 +651,7 @@ class ShortAnswerTest:
             if (self.verbose_mode == True and bubbled != '?'):
                 self.id_images.append(self.get_id_slice(x_min, x_max, y_min, y_max))
 
-            if bubbled is None:
+            if (bubbled is None):
                 bubbled = '-'
 
             self.id += str(bubbled)

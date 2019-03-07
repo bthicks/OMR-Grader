@@ -36,14 +36,14 @@ class Grader:
         _, contours, _ = cv.findContours(threshold, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key=cv.contourArea, reverse=True)
 
-        if len(contours) > 0:
+        if (len(contours) > 0):
             # Approximate the contour.
             for contour in contours:
                 peri = cv.arcLength(contour, True)
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
 
                 # Verify that contour has four corners.
-                if len(approx) == 4:
+                if (len(approx) == 4):
                     page = approx
                     break 
         else:
@@ -68,7 +68,7 @@ class Grader:
 
         decoded_objects = pyzbar.decode(new_page)
 
-        if decoded_objects == []:
+        if (decoded_objects == []):
             return None
         else:
             return decoded_objects[0]
@@ -126,7 +126,7 @@ class Grader:
         w = page.shape[1]
         h = page.shape[0]
 
-        if 0 <= qr_x <= (w / 4) and (h / 2) <= qr_y <= h:
+        if (0 <= qr_x <= (w / 4) and (h / 2) <= qr_y <= h):
             return True
         else:
             return False
@@ -143,12 +143,12 @@ class Grader:
                 image.
 
         """
-        if self.image_is_upright(page):
+        if (self.image_is_upright(page)):
             return page
         else:
             for _ in range(3):
                 page = self.rotate_image(page, 90)
-                if self.image_is_upright(page):
+                if (self.image_is_upright(page)):
                     return page
         return None
 
@@ -234,21 +234,21 @@ class Grader:
 
         # Load image. 
         im = cv.imread(image_name)
-        if im is None:
+        if (im is None):
             data['status'] = 1
             data['error'] = 'Image', image_name, 'not found'
             return json.dump(data, sys.stdout);
 
         # Find test page within image.
         page = self.find_page(im)
-        if page is None:
+        if (page is None):
             data['status'] = 1
             data['error'] = 'Page not found in', image_name
             return json.dump(data, sys.stdout);
 
         # Decode QR code, which will contain path to configuration file.
         qr_code = self.decode_qr(page)
-        if qr_code is None:
+        if (qr_code is None):
             data['status'] = 1
             data['error'] = 'QR code not found'
             return json.dump(data, sys.stdout);
@@ -268,7 +268,7 @@ class Grader:
 
         # Rotate page until upright.
         page = self.upright_image(page)
-        if page is None:
+        if (page is None):
             data['status'] = 1
             data['error'] = 'Could not upright page in', image_name
             return json.dump(data, sys.stdout);
@@ -278,7 +278,7 @@ class Grader:
 
         # Find answers box and grade bubbles.
         answer_box = test.get_answer_box()
-        if answer_box is None:
+        if (answer_box is None):
             data['status'] = 1
             data['error'] = 'Answer box not found'
         else:
@@ -305,7 +305,7 @@ class Grader:
 
         # Find id box and grade bubbles.
         id_box = test.get_id_box()
-        if id_box is None:
+        if (id_box is None):
             data['status'] = 1
             data['error'] = 'ID box not found'
         else:

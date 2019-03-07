@@ -732,38 +732,6 @@ class CalQuizTest(unittest.TestCase):
         self.assertEqual(data['id']['bubbled'], '---------')
         self.assertEqual(data['version']['bubbled'], '')
 
-    def test_quiz_4_01(self):
-        grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz4/image-01.png", True)
-        data = json.loads(jsonData)
-
-        self.assertEqual(data['answers']['bubbled'], ['A', 'B', '', '', '', ''])
-        self.assertEqual(data['id']['bubbled'], '014029856')
-
-    def test_quiz_4_02(self):
-        grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz4/image-02.png", True)
-        data = json.loads(jsonData)
-
-        self.assertEqual(data['answers']['bubbled'], ['', '', '', '', '', ''])
-        self.assertEqual(data['id']['bubbled'], '014504694')
-
-    def test_quiz_4_03(self):
-        grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz4/image-03.png", True)
-        data = json.loads(jsonData)
-
-        self.assertEqual(data['answers']['bubbled'], ['C', 'C', '', '', '', ''])
-        self.assertEqual(data['id']['bubbled'], '014518565')
-
-    def test_quiz_4_04(self):
-        grader = g.Grader()
-        jsonData = grader.grade("calQuiz/quiz4/image-04.png", True)
-        data = json.loads(jsonData)
-
-        self.assertEqual(data['answers']['bubbled'], ['C', 'B', '', '', '', ''])
-        self.assertEqual(data['id']['bubbled'], '015297655')
-
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(CalQuizTest)
