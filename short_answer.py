@@ -386,6 +386,7 @@ class ShortAnswerTest:
                 in the test image.
 
         """
+        # Split bubbles by question.
         questions = [[] for i in range(self.config['answer_rows'])]
 
         for bubble in column:
@@ -408,11 +409,20 @@ class ShortAnswerTest:
             for bubble in question:
                 bounding_rects.append(cv.boundingRect(bubble))
 
-            x_min = min(bounding_rects, key=lambda x: x[0])[0] + self.config['answer_x']
-            x_max = max(bounding_rects, key=lambda x: x[0])[0] + self.config['answer_x']
             y_min = min(bounding_rects, key=lambda x: x[1])[1] + self.config['answer_y']
             y_max = max(bounding_rects, key=lambda x: x[1])[1] + self.config['answer_y']
 
+            if (column_num == 0):
+                x_min = self.config['answer_x_min_1']
+                x_max = self.config['answer_x_max_1']
+            elif (column_num == 1):
+                x_min = self.config['answer_x_min_2']
+                x_max = self.config['answer_x_max_2']
+            elif (column_num == 2):
+                x_min = self.config['answer_x_min_3']
+                x_max = self.config['answer_x_max_3']
+
+            # Question is missing bubbles so count as unsure
             if (len(question) != 5):
                 bubbled = '?'
                 self.unsure_answers.append(i + 1 + (2 * column_num))
@@ -421,6 +431,7 @@ class ShortAnswerTest:
                 self.answer_status = 1
                 continue
 
+            # For each bubble in question i
             for (j, bubble) in enumerate(question):
                 mask = np.zeros(answer_box.shape, dtype="uint8")
                 cv.drawContours(mask, [bubble], -1, 255, -1)

@@ -197,7 +197,7 @@ class Grader:
             encoded = base64.b64encode(binary)
             return encoded.decode("utf-8")
 
-    def grade(self, image_name, verbose_mode):
+    def grade(self, image_name, verbose_mode, debug_mode):
         """
         Grades a test image and outputs the result to stdout as a JSON object.
 
@@ -205,9 +205,10 @@ class Grader:
             image_name (str): Filepath to the test image to be graded.
 
         """
-        # for debugging
-        #cv.namedWindow(image_name, cv.WINDOW_NORMAL)
-        #cv.resizeWindow(image_name, 850, 1100)
+        # For testing.
+        if (debug_mode):
+            cv.namedWindow(image_name, cv.WINDOW_NORMAL)
+            cv.resizeWindow(image_name, 850, 1100)
 
         # Initialize dictionary to be returned.
         data = {
@@ -291,6 +292,10 @@ class Grader:
             for image in answer_data[2]:
                 data['answers']['images'].append(self.encode_image(image))
 
+                if (debug_mode):
+                    cv.imshow(image_name, image)
+                    cv.waitKey()
+
         # Find version box and grade bubbles.
         version_box = test.get_version_box()
         if version_box is None:
@@ -302,6 +307,10 @@ class Grader:
             data['version']['bubbled'] = version_data[0]
             data['version']['image'] = self.encode_image(version_data[1])
             data['version']['status'] = version_data[2]
+
+            if (debug_mode and version_data[1] is not None):
+                cv.imshow(image_name, version_data[1])
+                cv.waitKey()
 
         # Find id box and grade bubbles.
         id_box = test.get_id_box()
@@ -317,6 +326,10 @@ class Grader:
 
             for image in id_data[2]:
                 data['id']['images'].append(self.encode_image(image))
+
+                if (debug_mode):
+                    cv.imshow(image_name, image)
+                    cv.waitKey()
 
         # Output result as a JSON object to stdout.
         json.dump(data, sys.stdout)
@@ -334,11 +347,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('-i', '--image', required=True, help='path to the input image')
     ap.add_argument('-v', action='store_true', required=False, help='enable verbose mode')
+    ap.add_argument('-d', action='store_true', required=False, help='enable debug mode')
     args = vars(ap.parse_args())
 
     # Grade test.
     grader = Grader()
-    return grader.grade(args['image'], args['v']) 
+    return grader.grade(args['image'], args['v'], args['d'])
 
 if __name__ == '__main__':
     main()
