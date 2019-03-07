@@ -386,28 +386,47 @@ class ShortAnswerTest:
                 in the test image.
 
         """
-        # Each field has 5 bubbles so loop in batches of 5.
-        for (question, i) in enumerate(np.arange(0, len(column), 5)):
-            contours, _ = cutils.sort_contours(column[i:i + 5])
-            bubbled = ""
+        questions = [[] for i in range(self.config['answer_rows'])]
+
+        for bubble in column:
+            (x, y, w, h) = cv.boundingRect(bubble)
+            y += self.config['answer_y']
+
+            if (y >= self.config['answer_y_min'] - self.config['y_error'] and
+                y <= self.config['answer_y_min'] + self.config['y_error']):
+                questions[0].append(bubble)
+            if (y >= self.config['answer_y_max'] - self.config['y_error'] and
+                y <= self.config['answer_y_max'] + self.config['y_error']):
+                questions[1].append(bubble)
+
+        for (i, question) in enumerate(questions):
+            question, _ = cutils.sort_contours(question, method="left-to-right")
+            bubbled = ''
             bounding_rects = []
 
             # Calculate x and y boundaries of this question for image slicing.
-            for (j, c) in enumerate(contours):
-                bounding_rects.append(cv.boundingRect(c))
+            for bubble in question:
+                bounding_rects.append(cv.boundingRect(bubble))
 
             x_min = min(bounding_rects, key=lambda x: x[0])[0] + self.config['answer_x']
             x_max = max(bounding_rects, key=lambda x: x[0])[0] + self.config['answer_x']
             y_min = min(bounding_rects, key=lambda x: x[1])[1] + self.config['answer_y']
             y_max = max(bounding_rects, key=lambda x: x[1])[1] + self.config['answer_y']
 
-            # For each bubble in this question.
-            for (j, c) in enumerate(contours):
+            if (len(question) != 5):
+                bubbled = '?'
+                self.unsure_answers.append(i + 1 + (2 * column_num))
+                self.answers.append(bubbled)
+                self.answer_images.append(self.get_answer_slice(x_min, x_max, y_min, y_max))
+                self.answer_status = 1
+                continue
+
+            for (j, bubble) in enumerate(question):
                 mask = np.zeros(answer_box.shape, dtype="uint8")
-                cv.drawContours(mask, [c], -1, 255, -1)
+                cv.drawContours(mask, [bubble], -1, 255, -1)
                 mask = cv.bitwise_and(answer_box, answer_box, mask=mask)
                 total = cv.countNonZero(mask)
-                (x, y, w, h) = cv.boundingRect(c)
+                (x, y, w, h) = cv.boundingRect(bubble)
                 area = math.pi * ((min(w, h) / 2) ** 2)
 
                 # If ~50% bubbled, count as marked.
@@ -416,7 +435,7 @@ class ShortAnswerTest:
                 # Count as unsure. 
                 elif (total / area) > 0.75:
                     bubbled = '?'
-                    self.unsure_answers.append(question + 1 + (2 * column_num))
+                    self.unsure_answers.append(i + 1 + (2 * column_num))
                     self.answer_images.append(self.get_answer_slice(x_min, x_max, y_min, y_max))
                     self.answer_status = 1
                     break
@@ -441,10 +460,23 @@ class ShortAnswerTest:
         # Get and grade bubbles in question box.
         bubbles = self.get_answer_bubbles(answer_box)
         bubbles, _ = cutils.sort_contours(bubbles, method="left-to-right")
-        third = int(len(bubbles) / 3)
-        column_1 = bubbles[0 : third]
-        column_2 = bubbles[third : 2 * third]
-        column_3 = bubbles[2 * third : 3 * third]
+        column_1 = []
+        column_2 = []
+        column_3 = []
+
+        for bubble in bubbles:
+            (x, y, w, h) = cv.boundingRect(bubble)
+            x += self.config['answer_x']
+
+            if (x >= self.config['answer_x_min_1'] - self.config['x_error'] and
+                x <= self.config['answer_x_max_1'] + self.config['x_error']):
+                column_1.append(bubble)
+            elif (x >= self.config['answer_x_min_2'] - self.config['x_error'] and
+                  x <= self.config['answer_x_max_2'] + self.config['x_error']):
+                column_2.append(bubble)
+            elif (x >= self.config['answer_x_min_3'] - self.config['x_error'] and
+                  x <= self.config['answer_x_max_3'] + self.config['x_error']):
+                column_3.append(bubble)
 
         # Grade questions 1-2.
         column_1, _ = cutils.sort_contours(column_1, method="top-to-bottom")

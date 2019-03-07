@@ -187,7 +187,7 @@ class CalQuizTest(unittest.TestCase):
         jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_03.png", True)
         data = json.loads(jsonData)
 
-        self.assertEqual(data['answers']['bubbled'], ['A', 'A', 'B', '', '', ''])
+        self.assertEqual(data['answers']['bubbled'], ['?', 'A', '?', '', '', ''])
         self.assertEqual(data['id']['bubbled'], '015360224')
 
     def test_quiz_2_04(self):
@@ -307,7 +307,7 @@ class CalQuizTest(unittest.TestCase):
         jsonData = grader.grade("calQuiz/quiz2/quiz2_Page_18.png", True)
         data = json.loads(jsonData)
 
-        self.assertEqual(data['answers']['bubbled'], ['B', 'E', 'B', '', '', ''])
+        self.assertEqual(data['answers']['bubbled'], ['?', 'E', 'B', '', '', ''])
         self.assertEqual(data['id']['bubbled'], '016302347')
 
     def test_quiz_2_19(self):
