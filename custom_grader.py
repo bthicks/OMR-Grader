@@ -65,7 +65,6 @@ class CustomGrader:
         """
         # Increase image contrast to better identify QR code.
         _, new_page = cv.threshold(im, 127, 255, cv.THRESH_BINARY)
-
         decoded_objects = pyzbar.decode(new_page)
 
         if (decoded_objects == []):
@@ -86,35 +85,74 @@ class CustomGrader:
             numpy.ndarray: An ndarray representing the rotated test image.
 
         """
-        return
+        w = im.shape[1]
+        h = im.shape[0]
+        rads = np.deg2rad(angle)
 
-    def image_is_upright(self, page):
+        # Calculate new image width and height.
+        nw = abs(np.sin(rads) * h) + abs(np.cos(rads) * w)
+        nh = abs(np.cos(rads) * h) + abs(np.sin(rads) * w)
+
+        # Get the rotation matrix.
+        rot_mat = cv.getRotationMatrix2D((nw * 0.5, nh * 0.5), angle, 1)
+
+        # Calculate the move from old center to new center combined with the 
+        # rotation.
+        rot_move = np.dot(rot_mat, np.array([(nw - w) * 0.5, (nh - h) * 0.5, 0]))
+
+        # Update the translation of the transform.
+        rot_mat[0,2] += rot_move[0]
+        rot_mat[1,2] += rot_move[1]
+
+        return cv.warpAffine(im, rot_mat, (int(math.ceil(nw)), 
+            int(math.ceil(nh))), flags=cv.INTER_LANCZOS4)
+
+    def image_is_upright(self, page, config):
         """
         Checks if an image is upright, based on the coordinates of the QR code
         in the image
 
         Args:
             page (numpy.ndarray): An ndarray representing the test image.
+            config (dict): A dictionary containing the config file values
 
         Returns:
             bool: True if image is upright, False otherwise.
 
         """
-        return
+        qr_code = self.decode_qr(page)
+        qr_x = qr_code.rect.left
+        qr_y = qr_code.rect.top
+        x_error = config['x_error']
+        y_error = config['y_error']
 
-    def upright_image(self, page):
+        if ((config['qr_x'] - x_error <= qr_x <= config['qr_x'] + x_error) and 
+                (config['qr_y'] - y_error <= qr_y <= config['qr_y'] + y_error)):
+            return True
+        else:
+            return False
+
+    def upright_image(self, page, config):
         """
         Rotates an image by 90 degree increments until it is upright.
 
         Args:
             page (numpy.ndarray): An ndarray representing the test image.
+            config (dict): A dictionary containing the config file values
 
         Returns:
             page (numpy.ndarray): An ndarray representing the upright test 
                 image.
 
         """
-        return
+        if (self.image_is_upright(page, config)):
+            return page
+        else:
+            for _ in range(3):
+                page = self.rotate_image(page, 90)
+                if (self.image_is_upright(page, config)):
+                    return page
+        return None
 
 
     def scale_config_r(self, config, x_scale, y_scale, re_x, re_y):
@@ -176,7 +214,12 @@ class CustomGrader:
             str: A base64 string encoding of the image.
 
         """
-        return
+        if (image is None):
+            return None
+        else:
+            _, binary = cv.imencode('.png', image)
+            encoded = base64.b64encode(binary)
+            return encoded.decode("utf-8")
 
     def grade(self, image_name, verbose_mode, debug_mode):
         """
@@ -232,7 +275,12 @@ class CustomGrader:
             data['error'] = 'Configuration file', qrData, 'not found'
             return json.dump(data, sys.stdout);     
 
-        
+        # Rotate page until upright.
+        page = self.upright_image(page, config)
+        if (page is None):
+            data['status'] = 1
+            data['error'] = 'Could not upright page in', image_name
+            return json.dump(data, sys.stdout);
 
         # Output result as a JSON object to stdout
         json.dump(data, sys.stdout)
