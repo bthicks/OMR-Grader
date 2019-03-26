@@ -3,7 +3,6 @@ import sys
 import argparse
 import base64
 import json
-import math
 import re
 
 import cv2 as cv
@@ -12,7 +11,7 @@ import pyzbar.pyzbar as pyzbar
 import numpy as np 
 
 from test_box import TestBox
-
+import utils
 
 class CustomGrader:
 
@@ -30,8 +29,8 @@ class CustomGrader:
         # Convert image to grayscale then blur to better detect contours.
         imgray = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
         blurred = cv.GaussianBlur(imgray.copy(), (5, 5), 0)
-        _, threshold = cv.threshold(blurred, 0, 255, 
-            cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
+        _, threshold = cv.threshold(blurred, 0, 255, cv.THRESH_BINARY_INV 
+            | cv.THRESH_OTSU)
 
         # Find contour for entire page. 
         _, contours, _ = cv.findContours(threshold, cv.RETR_EXTERNAL, 
@@ -74,45 +73,10 @@ class CustomGrader:
         else:
             return decoded_objects[0]
 
-    def rotate_image(self, im, angle):
-        '''
-        Rotates an image by a specified angle.
-
-        Args:
-            im (numpy.ndarray): An ndarray representing the entire test image.
-            angle (int): The angle, in degrees, by which the image should be 
-                rotated.
-
-        Returns:
-            numpy.ndarray: An ndarray representing the rotated test image.
-
-        '''
-        w = im.shape[1]
-        h = im.shape[0]
-        rads = np.deg2rad(angle)
-
-        # Calculate new image width and height.
-        nw = abs(np.sin(rads) * h) + abs(np.cos(rads) * w)
-        nh = abs(np.cos(rads) * h) + abs(np.sin(rads) * w)
-
-        # Get the rotation matrix.
-        rot_mat = cv.getRotationMatrix2D((nw * 0.5, nh * 0.5), angle, 1)
-
-        # Calculate the move from old center to new center combined with the 
-        # rotation.
-        rot_move = np.dot(rot_mat, np.array([(nw - w) * 0.5, (nh - h) * 0.5, 0]))
-
-        # Update the translation of the transform.
-        rot_mat[0,2] += rot_move[0]
-        rot_mat[1,2] += rot_move[1]
-
-        return cv.warpAffine(im, rot_mat, (int(math.ceil(nw)), 
-            int(math.ceil(nh))), flags=cv.INTER_LANCZOS4)
-
     def image_is_upright(self, page, config):
         '''
         Checks if an image is upright, based on the coordinates of the QR code
-        in the image
+        in the image.
 
         Args:
             page (numpy.ndarray): An ndarray representing the test image.
@@ -151,7 +115,7 @@ class CustomGrader:
             return page
         else:
             for _ in range(3):
-                page = self.rotate_image(page, 90)
+                page = utils.rotate_image(page, 90)
                 if (self.image_is_upright(page, config)):
                     return page
         return None
@@ -290,6 +254,8 @@ class CustomGrader:
 
         # Grade each test box and add result to data.
         for box_config in config['boxes']:
+            box_config['x_error'] = config['x_error']
+            box_config['y_error'] = config['y_error']
             box = TestBox(page, box_config, verbose_mode, debug_mode)
             data[box.name] = box.grade()
 
