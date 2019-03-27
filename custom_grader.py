@@ -256,6 +256,8 @@ class CustomGrader:
         for box_config in config['boxes']:
             box_config['x_error'] = config['x_error']
             box_config['y_error'] = config['y_error']
+            box_config['bubble_width'] = config['bubble_width']
+            box_config['bubble_height'] = config['bubble_height']
             box = TestBox(page, box_config, verbose_mode, debug_mode)
             data[box.name] = box.grade()
 
