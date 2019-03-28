@@ -1,5 +1,4 @@
 import cv2 as cv
-from imutils.perspective import four_point_transform
 
 import utils
 
@@ -124,33 +123,31 @@ class TestBox:
         else:
             return False
 
-    def get_box_helper(self, box):
+    def get_box_helper(self, im):
         '''
         Finds and returns the box with bubbles as external contours, not a box
         within a box.
 
         Args:
-            box (numpy.ndarray): An ndarray representing the possible test box.
+            im (numpy.ndarray): An ndarray representing the possible test box.
 
         Returns:
-            new_box (numpy.ndarray): An ndarray representing the test box.
+            box (numpy.ndarray): An ndarray representing the test box.
 
         '''
         # Find external contours of the test box.
-        _, contours, _ = cv.findContours(box, cv.RETR_EXTERNAL, 
+        _, contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, 
             cv.CHAIN_APPROX_SIMPLE)
-        new_box = box
+        box = im
 
         # A box within a box will have 1 external contour; continue looping
         # until multiple external contours are found.
         while (len(contours) == 1):
-            peri = cv.arcLength(contours[0], True)
-            approx = cv.approxPolyDP(contours[0], 0.02 * peri, True)
-            new_box = four_point_transform(box, approx.reshape(4, 2))
-            _, contours, _ = cv.findContours(new_box, cv.RETR_EXTERNAL, 
+            box = utils.get_transform(contours[0], im)
+            _, contours, _ = cv.findContours(box, cv.RETR_EXTERNAL, 
                 cv.CHAIN_APPROX_SIMPLE)
 
-        return new_box
+        return box
 
     def get_box(self):
         '''
@@ -170,9 +167,7 @@ class TestBox:
         # Iterate through contours until the correct box is found.
         for contour in contours:
             if (self.is_box(contour)):
-                peri = cv.arcLength(contour, True)
-                approx = cv.approxPolyDP(contour, 0.02 * peri, True)
-                box = four_point_transform(threshold, approx.reshape(4, 2))
+                box = utils.get_transform(contour, threshold)
 
                 # Find inner contours to verify that the box contains bubbles.
                 _, inner_contours, _ = cv.findContours(box, cv.RETR_TREE, 
