@@ -263,6 +263,7 @@ class CustomGrader:
 
         # Output result as a JSON object to stdout.
         json.dump(data, sys.stdout)
+        print()
 
         # For debugging.
         return json.dumps(data)
