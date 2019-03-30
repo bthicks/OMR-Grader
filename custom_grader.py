@@ -10,6 +10,7 @@ from imutils.perspective import four_point_transform
 import pyzbar.pyzbar as pyzbar
 import numpy as np 
 
+import config_parser
 from test_box import TestBox
 import utils
 
@@ -204,7 +205,7 @@ class CustomGrader:
             cv.namedWindow(image_name, cv.WINDOW_NORMAL)
             cv.resizeWindow(image_name, 850, 1100)
 
-        #Initialize dictionary to be returned.
+        # Initialize dictionary to be returned.
         data = {
             'status' : 0,
             'error' : ''
@@ -235,15 +236,27 @@ class CustomGrader:
             config_fname = (os.path.dirname(os.path.abspath(sys.argv[0])) 
                 + '/config/custom_6q.json')     
 
-        # Read config file into dictionary and scale values.
+        # Read config file into dictionary and scale values. Check for duplicate
+        # keys with object pairs hook.
         try:
             with open(config_fname) as file:
-                config = json.load(file)
-            self.scale_config(config, page.shape[1], page.shape[0])
+                config = json.load(file, 
+                    object_pairs_hook=config_parser.duplicate_key_check)
         except FileNotFoundError:
             data['status'] = 1
             data['error'] = 'Configuration file', qrData, 'not found'
-            return json.dump(data, sys.stdout);     
+            return json.dump(data, sys.stdout);   
+
+        # Parse config file.
+        parser = config_parser.Parser(config, config_fname)
+        status, error = parser.parse()
+        if (status == 1):
+            data['status'] = 1
+            data['error'] = error
+            return json.dump(data, sys.stdout)
+
+        # Scale config values based on page size.
+        self.scale_config(config, page.shape[1], page.shape[0])  
 
         # Rotate page until upright.
         page = self.upright_image(page, config)
