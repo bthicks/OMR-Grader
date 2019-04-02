@@ -29,9 +29,7 @@ class CustomGrader:
         '''
         # Convert image to grayscale then blur to better detect contours.
         imgray = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
-        blurred = cv.GaussianBlur(imgray.copy(), (5, 5), 0)
-        _, threshold = cv.threshold(blurred, 0, 255, cv.THRESH_BINARY_INV 
-            | cv.THRESH_OTSU)
+        threshold = utils.get_threshold(imgray)
 
         # Find contour for entire page. 
         _, contours, _ = cv.findContours(threshold, cv.RETR_EXTERNAL, 

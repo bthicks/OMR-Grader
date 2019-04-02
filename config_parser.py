@@ -12,6 +12,8 @@ class Parser:
 
     box_orientations = ['left-to-right', 'top-to-bottom']
 
+    # TODO: check for rows and columns < 1 and similar errors
+
     def __init__(self, config, fname):
         '''
         Constructor for a new config file parser.
@@ -280,7 +282,7 @@ class Parser:
         Checks if config is of type dict. If it is, parses each key/value pair.
         If not, sets error status and message.
 
-        Returns
+        Returns:
             status (int): 0 if no errors detected, 1 otherwise.
             error (str): Error message if error detected.
 

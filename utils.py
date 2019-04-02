@@ -9,7 +9,7 @@ def get_threshold(im):
     Performs a Gaussian blur and threshold on an image for image processing.
     Returns the blurred and thresholded image.
 
-    Arguments:
+    Args:
         im (numpy.ndarray): An ndarray representing an image.
 
     Returns:
@@ -27,7 +27,7 @@ def get_transform(contour, im):
     '''
     Returns the portion of an image bounded by a contour.
 
-    Arguments:
+    Args:
         contour (numpy.ndarray): An ndarray representing a contour.
         im (numpy.ndarray): An ndarray representing an image.
 

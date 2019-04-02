@@ -105,7 +105,7 @@ class TestBox:
 
         # Init empty list for each group of bubbles.
         bubbles = []
-        for i in range(len(self.groups)):
+        for _ in range(len(self.groups)):
             bubbles.append([])
 
         # Check if contour is bubble; if it is, add to its appropriate group.
@@ -190,23 +190,117 @@ class TestBox:
 
         return None
 
-    def sort_bubbles(self, bubbles):
+    def init_questions(self):
         '''
-        Sorts a list of bubbles based on the test box orientation.
+        Initialize and return a list of empty lists based on the number of
+        questions in a group.
+
+        Returns:
+            questions (list): A list of empty lists.
+
+        '''
+        questions = []
+
+        if (self.orientation == 'left-to-right'):
+            num_questions = self.rows
+        elif (self.orientation == 'top-to-bottom'):
+            num_questions = self.columns
+
+        for _ in range(num_questions):
+            questions.append([])
+
+        return questions
+
+    def get_question_diff(self, config):
+        '''
+        Finds and returns the distance between each question.
+
+        Args:
+            config (dict): A dict containing the config values for this bubble
+                group.
+
+        Returns:
+            float: The distance between questions in this bubble group.
+
+        '''
+        if (self.orientation == 'left-to-right'):
+            if (self.rows == 1):
+                return 0
+            else:
+                return (config['y_max'] - config['y_min']) / (self.rows - 1)
+        elif (self.orientation == 'top-to-bottom'):
+            if (self.columns == 1):
+                return 0
+            else:
+                return (config['x_max'] - config['x_min']) / (self.columns - 1)
+
+    def get_question_offset(self, config):
+        '''
+        Returns the starting point for this group of bubbles.
+
+        Args:
+            config (dict): A dict containing the config values for this bubble
+                group.
+
+            Returns:
+                float: The starting point for this group of bubbles.
+
+        '''
+        if (self.orientation == 'left-to-right'):
+            return config['y_min'] - self.y
+        elif (self.orientation == 'top-to-bottom'):
+            return config['x_min'] - self.x
+
+    def get_question_num(self, bubble, diff, offset):
+        '''
+        Finds and returns the question number of a bubble based on its 
+        coordinates.
+
+        Args:
+            bubble (numpy.ndarray): An ndarray representing a bubble contour.
+            diff (float): The distance between questions in this bubble group.
+            offset (float): The starting point for this group of bubbles.
+
+        Returns:
+            int: The question number of this bubble.
+
+        '''
+        if (diff == 0):
+            return 0
+
+        (x, y, _, _) = cv.boundingRect(bubble)
+
+        if (self.orientation == 'left-to-right'):
+            return round((y - offset) / diff)
+        elif (self.orientation == 'top-to-bottom'):
+            return round((x - offset) / diff)     
+
+    def group_by_question(self, bubbles, config):
+        '''
+        Groups a list of bubbles by question.
 
         Args:
             bubbles (list): A list of bubble contours.
 
         Returns:
-            bubbles (list): A list of sorted bubble contours.
+            questions (list): A list of lists, where each list contains the 
+                bubble contours for a question.
 
         '''
-        if (self.orientation == "left-to-right"):
-            bubbles, _ = cutils.sort_contours(bubbles, method="top-to-bottom")
-        elif (self.orientation == "top-to-bottom"):
-            bubbles, _ = cutils.sort_contours(bubbles, method="left-to-right")
+        questions = self.init_questions()
+        diff = self.get_question_diff(config)
+        offset = self.get_question_offset(config)
+        num_questions = len(questions)
 
-        return bubbles
+        for bubble in bubbles:
+            question_num = self.get_question_num(bubble, diff, offset)
+            questions[question_num].append(bubble)
+
+        return questions
+
+    def grade_question(self, question):
+        # TODO
+        return
 
     def grade_bubbles(self, bubbles):
         '''
@@ -217,8 +311,13 @@ class TestBox:
                 bubble contours.
 
         '''
-        for group in bubbles:
-            group = self.sort_bubbles(group)
+        for (i, group) in enumerate(bubbles):
+            # Split a group of bubbles by question.
+            group = self.group_by_question(group, self.groups[i])
+
+            # Grade each question in the group.
+            for question in group:
+                self.grade_question(question)
 
     def grade(self):
         '''
