@@ -12,8 +12,6 @@ class Parser:
 
     box_orientations = ['left-to-right', 'top-to-bottom']
 
-    # TODO: check for rows and columns < 1 and similar errors
-
     def __init__(self, config, fname):
         '''
         Constructor for a new config file parser.
@@ -81,6 +79,49 @@ class Parser:
         self.status = 1
         self.error = 'Unknown value \'%s\' for key \'%s\'' % (value, key)
 
+    def neg_float_error(self, key, value):
+        '''
+        Sets the status and error message for a key with a negative float value.
+
+        Args:
+            key (str): The name of the key with a negative value error.
+            value (float): The negative float value.
+
+        '''
+        self.status = 1
+        self.error = ('Key \'%s\' must have a non-negative value. Found value ' 
+            '\'%s\'' % (key, value))
+
+    def non_pos_int_error(self, key, value):
+        '''
+        Sets the status and error message for a key with a non-positive int
+        value.
+
+        Args:
+            key (str): The name of the key with a non positive value error.
+            value (int): The non positive int value.
+
+        '''
+        self.status = 1
+        self.error = ('Key \'%s\' must have a value greater than zero. Found '
+            'value \'%s\'' % (key, value))
+
+    def min_max_error(self, min_key, min_value, max_key, max_value):
+        '''
+        Sets the status and error message for a min value greater than a max 
+        value.
+
+        Args:
+            min_key (str): The name of the min key.
+            min_value (float): The value of the min key.
+            max_key (str): The name of the max key.
+            max_value (float): The value of the max key.
+
+        '''
+        self.status = 1
+        self.error = ('Key \'%s\':\'%s\' must have a value less than or equal '
+            'to key \'%s\':\'%s\'' % (min_key, min_value, max_key, max_value))
+
     def parse_int(self, key, value):
         '''
         Checks if a value is of type int. If not, sets error status and message.
@@ -92,6 +133,9 @@ class Parser:
         '''
         if not (isinstance(value, int)):
             self.type_error(key, 'int', type(value))
+            return
+        if (value < 1):
+            self.non_pos_int_error(key, value)
 
     def parse_float(self, key, value):
         '''
@@ -105,6 +149,9 @@ class Parser:
         '''
         if not (isinstance(value, float)):
             self.type_error(key, 'float', type(value))
+            return
+        if (value < 0):
+            self.neg_float_error(key, value)
 
     def parse_box_orientation(self, orientation):
         '''
@@ -184,6 +231,14 @@ class Parser:
                 else:
                     self.unknown_key_error(key)
                     break
+
+            # Check if max values are greater than min values.
+            if (group['x_min'] > group['x_max']):
+                self.min_max_error('x_min', group['x_min'], 'x_max', 
+                    group['x_max'])
+            if (group['y_min'] > group['y_max']):
+                self.min_max_error('y_min', group['y_min'], 'y_max', 
+                    group['y_max'])
         else:
             self.type_error('group', 'dict', type(group))
 
