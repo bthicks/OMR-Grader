@@ -1,5 +1,8 @@
+import math
+
 import cv2 as cv
 from imutils import contours as cutils
+import numpy as np
 
 import utils
 
@@ -41,6 +44,12 @@ class TestBox:
         self.bubble_height = config['bubble_height']
         self.x_error = config['x_error']
         self.y_error = config['y_error']
+
+        # Set number of bubbles per question based on box orientation.
+        if (self.orientation == 'left-to-right'):
+            self.bubbles_per_q = self.columns
+        elif (self.orientation == 'top-to-bottom'):
+            self.bubbles_per_q = self.rows
 
         # Return values.
         self.bubbled = []
@@ -298,26 +307,115 @@ class TestBox:
 
         return questions
 
-    def grade_question(self, question):
-        # TODO
-        return
+    def handle_unsure_question(self, question_num, box):
+        '''
+        Adds the question to the list of unsure questions. Adds the image slice
+        for the question to the list of images.
 
-    def grade_bubbles(self, bubbles):
+        Args:
+            question_num (int): The question number.
+            box (numpy.ndarray): An ndarray representing the test box image.
+
+        '''
+        # TODO get image slice for unsure question.
+        self.unsure.append(question_num)
+
+    def get_percent_marked(self, bubble, box):
+        '''
+        Calculates the percentage of darkened pixels in the bubble contour.
+
+        Args:
+            bubble (numpy.ndarray): An ndarray representing the bubble.
+            box (numpy.ndarray): An ndarray representing the test box image.
+
+        Returns:
+            float: The percentage of darkened pixels in the bubble contour.
+
+        '''
+        # Applies a mask to the entire test box image to only look at one
+        # bubble, then counts the number of nonzero pixels in the bubble.
+        mask = np.zeros(box.shape, dtype="uint8")
+        cv.drawContours(mask, [bubble], -1, 255, -1)
+        mask = cv.bitwise_and(box, box, mask=mask)
+        total = cv.countNonZero(mask)
+        (x, y, w, h) = cv.boundingRect(bubble)
+        area = math.pi * ((min(w, h) / 2) ** 2)
+
+        return (total / area)
+
+    def format_answer(self, bubbled):
+        '''
+        Formats the answer for this question (string of letters or numbers).
+
+        Args:
+            bubbled (str): A string representing the graded answer.
+
+        Returns:
+            str: A formatted string representing the graded answer, or '-' for
+                an unmarked answer.
+
+        '''
+        if (bubbled == ''):
+            return '-'
+        if (self.type == 'number'):
+            return bubbled
+        elif (self.type == 'letter'):
+            return ''.join([chr(int(c) + 65) for c in bubbled])
+
+    def grade_question(self, question, question_num, box):
+        '''
+        Grades a question and adds the result to the 'bubbled' list.
+
+        Args:
+            question (list): A list of bubble contours for the question being
+                graded.
+            question_num (int): The question number.
+            box (numpy.ndarray): An ndarray representing the test box image.
+
+        '''
+        bubbled = ''
+
+        # If question is missing bubbles, mark as unsure.
+        if (len(question) != self.bubbles_per_q):
+            self.handle_unsure_question(question_num, box)
+            self.bubbled.append('?')
+            return
+
+        for (i, bubble) in enumerate(question):
+                percent_marked = self.get_percent_marked(bubble, box)
+
+                # If ~50% bubbled, count as marked.
+                if (percent_marked > 0.8):
+                    bubbled += str(i)
+                # Count as unsure.
+                elif (percent_marked > 0.75):
+                    self.handle_unsure_question(question_num, box)
+                    self.bubbled.append('?')
+                    break
+
+        self.bubbled.append(self.format_answer(bubbled))
+
+    def grade_bubbles(self, bubbles, box):
         '''
         Grades a list of bubbles from the test box.
 
         Args:
             bubbles (list): A list of lists, where each list is a group of 
                 bubble contours.
+            box (numpy.ndarray): An ndarray representing the test box.
 
         '''
         for (i, group) in enumerate(bubbles):
             # Split a group of bubbles by question.
             group = self.group_by_question(group, self.groups[i])
 
-            # Grade each question in the group.
-            for question in group:
-                self.grade_question(question)
+            # Sort bubbles in each question based on box orientation then grade.
+            for (j, question) in enumerate(group, 1):
+                question_num = j + (i * len(group))
+                question, _ = cutils.sort_contours(question,
+                    method=self.orientation)
+
+                self.grade_question(question, question_num, box)
 
     def grade(self):
         '''
@@ -336,7 +434,7 @@ class TestBox:
         # Find box, find bubbles in box, then grade bubbles.
         box = self.get_box()
         bubbles = self.get_bubbles(box)
-        self.grade_bubbles(bubbles)
+        self.grade_bubbles(bubbles, box)
 
         # Add results of grading to return value.
         data['bubbled'] = self.bubbled

@@ -8,7 +8,7 @@ import re
 import cv2 as cv
 from imutils.perspective import four_point_transform
 import pyzbar.pyzbar as pyzbar
-import numpy as np 
+import numpy as np
 
 import config_parser
 from test_box import TestBox
