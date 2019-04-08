@@ -5,8 +5,8 @@
     "bubble_height": 10.8,
     "qr_x": 23.79,
     "qr_y": 136.88,
-    "x_error": 8.1,
-    "y_error": 8.1,
+    "x_error": 10.8,
+    "y_error": 10.8,
     "boxes": [
         {
             "name": "answer",
@@ -41,8 +41,8 @@
             "name": "version",
             "type": "letter",
             "orientation": "left-to-right",
-            "x": 23.65,
-            "y": 20.86,
+            "x": 171.83,
+            "y": 82.99,
             "rows": 1,
             "columns": 5,
             "groups": [
