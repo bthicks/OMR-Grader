@@ -58,7 +58,35 @@ class TestBox:
         self.status = 0
         self.error = ''
 
-    def is_bubble(self, contour, bubbles):
+    def get_bubble_group(self, bubble):
+        '''
+        Finds and returns the group number that a bubble belongs to. Returns -1
+        if the bubble does not belong to a group.
+
+        Args:
+            bubble (numpy.ndarray): An ndarray representing a bubble contour.
+
+        Returns:
+            int: The bubble's group number.
+
+        '''
+        (x, y, w, h) = cv.boundingRect(bubble)
+
+        # Add offsets to get coordinates in relation to the whole test image 
+        # instead of in relation to the test box.
+        x += self.x
+        y += self.y
+
+        for (i, group) in enumerate(self.groups):
+            if (x >= group['x_min'] - self.x_error and
+                x <= group['x_max'] + self.x_error and
+                y >= group['y_min'] - self.y_error and
+                y <= group['y_max'] + self.y_error):
+                return i
+
+        return -1
+
+    def is_bubble(self, contour):
         '''
         Checks if a contour is of sufficient width and height, is somewhat
         circular, and is within the correct coordinates, with margins for error,
@@ -67,8 +95,9 @@ class TestBox:
         Args:
             contour (numpy.ndarray): An ndarray representing the contour being 
                 checked.
-            bubbles (list): A list of lists, where each list is a group of
-                bubble contours.
+
+        Returns:
+            bool: True if contour is counted as a bubble, False otherwise.
 
         '''
         (x, y, w, h) = cv.boundingRect(contour)
@@ -84,7 +113,7 @@ class TestBox:
             h < self.bubble_height * 0.9 or
             aspect_ratio < 0.7 or
             aspect_ratio > 1.3):
-            return
+            return False
 
         # If the contour fits the coordinates of a bubble group, add it to that
         # group.
@@ -93,8 +122,9 @@ class TestBox:
                 x <= group['x_max'] + self.x_error and
                 y >= group['y_min'] - self.y_error and
                 y <= group['y_max'] + self.y_error):
-                bubbles[i].append(contour)
-                break
+                return True
+
+        return False
 
     def get_bubbles(self, box):
         '''
@@ -119,11 +149,24 @@ class TestBox:
 
         # Check if contour is bubble; if it is, add to its appropriate group.
         for contour in contours:
-            self.is_bubble(contour, bubbles)
+            if (self.is_bubble(contour)):
+                group_num = self.get_bubble_group(contour)
+                bubbles[group_num].append(contour)
 
         return bubbles
 
-    def is_box(self, contour):
+    def box_contains_bubbles(self, box, threshold):
+        im = utils.get_transform(box, threshold)
+        _, contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, 
+            cv.CHAIN_APPROX_SIMPLE)
+
+        for contour in contours:
+            if (self.is_bubble(contour)):
+                return True
+
+        return False
+
+    def is_box(self, contour, threshold):
         '''
         Checks if x and y coordinates of a contour match the x and y coordinates
         of this test box, with margins for error.
@@ -139,36 +182,11 @@ class TestBox:
         (x, y, _, _) = cv.boundingRect(contour)
 
         if ((self.x - self.x_error <= x <= self.x + self.x_error) and 
-            (self.y - self.y_error <= y <= self.y + self.y_error)):
+            (self.y - self.y_error <= y <= self.y + self.y_error) and
+            self.box_contains_bubbles(contour, threshold)):
             return True
         else:
             return False
-
-    def get_box_helper(self, im):
-        '''
-        Finds and returns the box with bubbles as external contours, not a box
-        within a box.
-
-        Args:
-            im (numpy.ndarray): An ndarray representing the possible test box.
-
-        Returns:
-            box (numpy.ndarray): An ndarray representing the test box.
-
-        '''
-        # Find external contours of the test box.
-        _, contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, 
-            cv.CHAIN_APPROX_SIMPLE)
-        box = im
-
-        # A box within a box will have 1 external contour; continue looping
-        # until multiple external contours are found.
-        while (len(contours) == 1):
-            box = utils.get_transform(contours[0], im)
-            _, contours, _ = cv.findContours(box, cv.RETR_EXTERNAL, 
-                cv.CHAIN_APPROX_SIMPLE)
-
-        return box
 
     def get_box(self):
         '''
@@ -187,15 +205,8 @@ class TestBox:
 
         # Iterate through contours until the correct box is found.
         for contour in contours:
-            if (self.is_box(contour)):
-                box = utils.get_transform(contour, threshold)
-
-                # Find inner contours to verify that the box contains bubbles.
-                _, inner_contours, _ = cv.findContours(box, cv.RETR_TREE, 
-                    cv.CHAIN_APPROX_SIMPLE)
-
-                if (len(inner_contours) > 4):
-                    return self.get_box_helper(box)
+            if (self.is_box(contour, threshold)):
+                return utils.get_transform(contour, threshold)
 
         return None
 
