@@ -1,0 +1,69 @@
+{
+    "page_width": 565.06,
+    "page_height": 744.5,
+    "bubble_width": 10.8,
+    "bubble_height": 10.8,
+    "qr_x": 23.76,
+    "qr_y": 170.29,
+    "x_error": 10.8,
+    "y_error": 10.8,
+    "boxes": [
+        {
+            "name": "answer",
+            "type": "letter",
+            "orientation": "left-to-right",
+            "x": 23.65,
+            "y": 249.68,
+            "rows": 25,
+            "columns": 5, 
+            "groups": [
+                {
+                    "x_min": 69.00,
+                    "x_max": 143.12,
+                    "y_min": 280.15,
+                    "y_max": 680.94
+                },
+                {
+                    "x_min": 210.83,
+                    "x_max": 284.95,
+                    "y_min": 280.33,
+                    "y_max": 681.12       
+                }
+            ]
+        },
+        {
+            "name": "version",
+            "type": "letter",
+            "orientation": "left-to-right",
+            "x": 171.83,
+            "y": 116.04,
+            "rows": 1,
+            "columns": 5,
+            "groups": [
+                {
+                    "x_min": 208.25,
+                    "x_max": 282.37,
+                    "y_min": 129.17,
+                    "y_max": 139.97
+                }
+            ]
+        },
+        {
+            "name": "id",
+            "type": "number",
+            "orientation": "top-to-bottom",
+            "x": 343.03,
+            "y": 67.94,
+            "rows": 10,
+            "columns": 9,
+            "groups": [
+                {
+                    "x_min": 348.53,
+                    "x_max": 524.46,
+                    "y_min": 72.48,
+                    "y_max": 210.59
+                }
+            ]
+        }
+    ]
+}
