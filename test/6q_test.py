@@ -1,4 +1,4 @@
-import custom_grader as g
+import grader as g
 import json
 import os
 import unittest

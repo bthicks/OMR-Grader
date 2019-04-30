@@ -14,7 +14,7 @@ import config_parser
 from test_box import TestBox
 import utils
 
-class CustomGrader:
+class Grader:
 
     def find_page(self, im):
         '''
@@ -232,7 +232,7 @@ class CustomGrader:
         else:
             config_fname = qr_code.data.decode('utf-8')
             config_fname = (os.path.dirname(os.path.abspath(sys.argv[0])) 
-                + '/config/custom_6q.json')     
+                + '/config/6q.json')
 
         # Read config file into dictionary and scale values. Check for duplicate
         # keys with object pairs hook.
