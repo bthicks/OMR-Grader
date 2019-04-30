@@ -60,14 +60,14 @@ class TestBox:
 
     def get_bubble_group(self, bubble):
         '''
-        Finds and returns the group number that a bubble belongs to. Returns -1
-        if the bubble does not belong to a group.
+        Finds and returns the group number that a bubble belongs to.
 
         Args:
             bubble (numpy.ndarray): An ndarray representing a bubble contour.
 
         Returns:
-            int: The bubble's group number.
+            int: The bubble's group number or -1 if the bubble does not belong
+                to a group.
 
         '''
         (x, y, w, h) = cv.boundingRect(bubble)
@@ -345,7 +345,7 @@ class TestBox:
         '''
         # Applies a mask to the entire test box image to only look at one
         # bubble, then counts the number of nonzero pixels in the bubble.
-        mask = np.zeros(box.shape, dtype="uint8")
+        mask = np.zeros(box.shape, dtype='uint8')
         cv.drawContours(mask, [bubble], -1, 255, -1)
         mask = cv.bitwise_and(box, box, mask=mask)
         total = cv.countNonZero(mask)

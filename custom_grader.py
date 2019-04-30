@@ -184,7 +184,7 @@ class CustomGrader:
         else:
             _, binary = cv.imencode('.png', image)
             encoded = base64.b64encode(binary)
-            return encoded.decode("utf-8")
+            return encoded.decode('utf-8')
 
     def grade(self, image_name, verbose_mode, debug_mode):
         '''
