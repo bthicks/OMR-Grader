@@ -296,7 +296,7 @@ def main():
     args = vars(ap.parse_args())
 
     # Grade test.
-    grader = CustomGrader()
+    grader = Grader()
     return grader.grade(args['image'], args['v'], args['d'])
 
 if (__name__ == '__main__'):
