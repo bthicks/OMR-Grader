@@ -340,16 +340,16 @@ class TestBox:
 
         if (self.orientation == 'left-to-right'):
             question_num = question_num - (group_num * self.rows) - 1
-            x_min = config['x_min'] - self.x - self.x_error
+            x_min = max(config['x_min'] - self.x - self.x_error, 0)
             x_max = config['x_max'] - self.x + self.x_error
-            y_min = (diff * question_num) + offset
-            y_max = y_min + self.bubble_height
+            y_min = max((diff * question_num) + offset - (self.y_error / 2), 0)
+            y_max = y_min + self.bubble_height + self.y_error
         elif (self. orientation == 'top-to-bottom'):
             question_num = question_num - (group_num * self.columns) - 1
-            x_min = (diff * question_num) + offset
-            x_max = x_min + self.bubble_width
-            y_min = config['y_min'] - (2 * self.y_error)
-            y_max = config['y_max'] + self.y_error
+            x_min = max((diff * question_num) + offset - (self.x_error / 2), 0)
+            x_max = x_min + self.bubble_width + self.x_error
+            y_min = max(config['y_min'] - self.y - self.y_error, 0)
+            y_max = config['y_max'] - self.y + self.y_error
 
         return (x_min, x_max, y_min, y_max)
 
