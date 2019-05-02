@@ -1,7 +1,6 @@
 import os
 import sys
 import argparse
-import base64
 import json
 import re
 
@@ -167,24 +166,6 @@ class Grader:
         re_y = re.compile('(_|^)y(_|$)')
         
         self.scale_config_r(config, x_scale, y_scale, re_x, re_y)
-
-    def encode_image(self, image):
-        '''
-        Encodes a .png image into a base64 string.
-
-        Args:
-            image (numpy.ndarray): An ndarray representing an image.
-
-        Returns:
-            str: A base64 string encoding of the image.
-
-        '''
-        if (image is None):
-            return None
-        else:
-            _, binary = cv.imencode('.png', image)
-            encoded = base64.b64encode(binary)
-            return encoded.decode('utf-8')
 
     def grade(self, image_name, verbose_mode, debug_mode):
         '''

@@ -1,3 +1,4 @@
+import base64
 import math
 
 import cv2 as cv
@@ -75,3 +76,21 @@ def rotate_image(im, angle):
 
     return cv.warpAffine(im, rot_mat, (int(math.ceil(nw)), 
         int(math.ceil(nh))), flags=cv.INTER_LANCZOS4)
+
+def encode_image(image):
+    '''
+    Encodes a .png image into a base64 string.
+
+    Args:
+        image (numpy.ndarray): An ndarray representing an image.
+
+    Returns:
+        str: A base64 string encoding of the image.
+
+    '''
+    if (image is None):
+        return None
+    else:
+        _, binary = cv.imencode('.png', image)
+        encoded = base64.b64encode(binary)
+        return encoded.decode('utf-8')

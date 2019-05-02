@@ -318,17 +318,76 @@ class TestBox:
 
         return questions
 
-    def handle_unsure_question(self, question_num, box):
+    def get_image_coords(self, question_num, group_num, config):
         '''
-        Adds the question to the list of unsure questions. Adds the image slice
-        for the question to the list of images.
+        Finds and returns the coordinates of a question in the test image.
 
         Args:
             question_num (int): The question number.
+            group_num (int): The question's group number.
+            config (dict): A dict containing the config values for this bubble
+                group.
+
+        Returns:
+            x_min (float): Minimum x coordinate.
+            x_max (float): Maximum x coordinate.
+            y_min (float): Minimum y coordinate.
+            y_max (float): Maximum y coordinate.
+
+        '''
+        diff = self.get_question_diff(config)
+        offset = self.get_question_offset(config)
+
+        if (self.orientation == 'left-to-right'):
+            question_num = question_num - (group_num * self.rows) - 1
+            x_min = config['x_min'] - self.x - self.x_error
+            x_max = config['x_max'] - self.x + self.x_error
+            y_min = (diff * question_num) + offset
+            y_max = y_min + self.bubble_height
+        elif (self. orientation == 'top-to-bottom'):
+            question_num = question_num - (group_num * self.columns) - 1
+            x_min = (diff * question_num) + offset
+            x_max = x_min + self.bubble_width
+            y_min = config['y_min'] - (2 * self.y_error)
+            y_max = config['y_max'] + self.y_error
+
+        return (x_min, x_max, y_min, y_max)
+
+    def get_image_slice(self, question_num, group_num, box):
+        '''
+        Crops and returns an image slice for the unsure question.
+
+        Args:
+            question_num (int): The question number.
+            group_num (int): The question's group number.
+            box (numpy.ndarray): An ndarray representing the test box image.
+
+        Returns:
+            numpy.ndarray: An ndarray representing the specified question in the
+                test image.
+
+        '''
+        config = self.groups[group_num]
+        (x_min, x_max, y_min, y_max) = self.get_image_coords(question_num, 
+            group_num, config)
+
+        return box[int(y_min) : int(y_max), int(x_min) : int(x_max)]
+
+    def handle_unsure_question(self, question_num, group_num, box):
+        '''
+        Adds the image slice for the question to the list of images. Adds the
+        question to the list of unsure questions.
+
+        Args:
+            question_num (int): The question number.
+            group_num (int): The question's group number.
             box (numpy.ndarray): An ndarray representing the test box image.
 
         '''
-        # TODO get image slice for unsure question.
+        im = self.get_image_slice(question_num, group_num, box)
+        encoded_im = utils.encode_image(im)
+
+        self.images.append(encoded_im)
         self.unsure.append(question_num)
 
     def get_percent_marked(self, bubble, box):
@@ -373,7 +432,7 @@ class TestBox:
         elif (self.type == 'letter'):
             return ''.join([chr(int(c) + 65) for c in bubbled])
 
-    def grade_question(self, question, question_num, box):
+    def grade_question(self, question, question_num, group_num, box):
         '''
         Grades a question and adds the result to the 'bubbled' list.
 
@@ -381,6 +440,7 @@ class TestBox:
             question (list): A list of bubble contours for the question being
                 graded.
             question_num (int): The question number.
+            group_num (int): The question's group number.
             box (numpy.ndarray): An ndarray representing the test box image.
 
         '''
@@ -388,7 +448,7 @@ class TestBox:
 
         # If question is missing bubbles, mark as unsure.
         if (len(question) != self.bubbles_per_q):
-            self.handle_unsure_question(question_num, box)
+            self.handle_unsure_question(question_num, group_num, box)
             self.bubbled.append('?')
             return
 
@@ -400,7 +460,7 @@ class TestBox:
                     bubbled += str(i)
                 # Count as unsure.
                 elif (percent_marked > 0.75):
-                    self.handle_unsure_question(question_num, box)
+                    self.handle_unsure_question(question_num, group_num, box)
                     self.bubbled.append('?')
                     break
 
@@ -426,7 +486,7 @@ class TestBox:
                 question, _ = cutils.sort_contours(question,
                     method=self.orientation)
 
-                self.grade_question(question, question_num, box)
+                self.grade_question(question, question_num, i, box)
 
     def grade(self):
         '''
