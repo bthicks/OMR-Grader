@@ -373,10 +373,9 @@ class TestBox:
 
         return box[int(y_min) : int(y_max), int(x_min) : int(x_max)]
 
-    def handle_unsure_question(self, question_num, group_num, box):
+    def add_image_slice(self, question_num, group_num, box):
         '''
-        Adds the image slice for the question to the list of images. Adds the
-        question to the list of unsure questions.
+        Adds the image slice for the question to the list of images.
 
         Args:
             question_num (int): The question number.
@@ -388,6 +387,19 @@ class TestBox:
         encoded_im = utils.encode_image(im)
 
         self.images.append(encoded_im)
+
+    def handle_unsure_question(self, question_num, group_num, box):
+        '''
+        Adds the image slice for the question to the list of images. Adds the
+        question to the list of unsure questions.
+
+        Args:
+            question_num (int): The question number.
+            group_num (int): The question's group number.
+            box (numpy.ndarray): An ndarray representing the test box image.
+
+        '''
+        self.add_image_slice(question_num, group_num, box)
         self.unsure.append(question_num)
 
     def get_percent_marked(self, bubble, box):
@@ -445,9 +457,11 @@ class TestBox:
 
         '''
         bubbled = ''
+        unsure = False
 
         # If question is missing bubbles, mark as unsure.
         if (len(question) != self.bubbles_per_q):
+            unsure = True
             self.handle_unsure_question(question_num, group_num, box)
             self.bubbled.append('?')
             return
@@ -460,9 +474,15 @@ class TestBox:
                     bubbled += str(i)
                 # Count as unsure.
                 elif (percent_marked > 0.75):
+                    unsure = True
                     self.handle_unsure_question(question_num, group_num, box)
                     self.bubbled.append('?')
                     break
+
+        # Add image slice if program running in verbose mode and image slice not
+        # already added
+        if (self.verbose_mode and unsure == False):
+            self.add_image_slice(question_num, group_num, box)
 
         self.bubbled.append(self.format_answer(bubbled))
 
