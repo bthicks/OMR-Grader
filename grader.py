@@ -179,11 +179,6 @@ class Grader:
                 otherwise.
 
         '''
-        # Set window size for displayed images when debugging.
-        if (debug_mode):
-            cv.namedWindow(image_name, cv.WINDOW_NORMAL)
-            cv.resizeWindow(image_name, 850, 1100)
-
         # Initialize dictionary to be returned.
         data = {
             'status' : 0,

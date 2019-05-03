@@ -386,6 +386,11 @@ class TestBox:
         im = self.get_image_slice(question_num, group_num, box)
         encoded_im = utils.encode_image(im)
 
+        # Display image to screen if program runnning in debug mode.
+        if (self.debug_mode):
+            cv.imshow('', im)
+            cv.waitKey()
+
         self.images.append(encoded_im)
 
     def handle_unsure_question(self, question_num, group_num, box):
