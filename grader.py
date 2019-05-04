@@ -167,7 +167,7 @@ class Grader:
         
         self.scale_config_r(config, x_scale, y_scale, re_x, re_y)
 
-    def grade(self, image_name, verbose_mode, debug_mode):
+    def grade(self, image_name, verbose_mode, debug_mode, scale):
         '''
         Grades a test image and outputs the result to stdout as a JSON object.
 
@@ -177,6 +177,7 @@ class Grader:
                 otherwise.
             debug_mode (bool): True to run program in debug mode, False 
                 otherwise.
+            scale (str): Factor to scale image slices by.
 
         '''
         # Initialize dictionary to be returned.
@@ -184,6 +185,23 @@ class Grader:
             'status' : 0,
             'error' : ''
         }
+
+        # Cast str to float for scale.
+        if (scale is None):
+            scale = 1.0
+        else:
+            try:
+                scale = float(scale)
+            except ValueError:
+                data['status'] = 1
+                data['error'] = 'Scale', scale, 'must be of type float'
+                return json.dump(data, sys.stdout)
+
+        # Verify that scale is positive.
+        if (scale <= 0):
+            data['status'] = 1
+            data['error'] = 'Scale', scale, 'must be positive'
+            return json.dump(data, sys.stdout)
 
         # Verify that the filepath leads to a .png
         if not (image_name.endswith('.png')):
@@ -251,7 +269,7 @@ class Grader:
             box_config['y_error'] = config['y_error']
             box_config['bubble_width'] = config['bubble_width']
             box_config['bubble_height'] = config['bubble_height']
-            box = TestBox(page, box_config, verbose_mode, debug_mode)
+            box = TestBox(page, box_config, verbose_mode, debug_mode, scale)
             data[box.name] = box.grade()
 
         # Output result as a JSON object to stdout.
@@ -260,7 +278,6 @@ class Grader:
 
         # For debugging.
         return json.dumps(data)
-
 
 def main():
     '''
@@ -275,11 +292,12 @@ def main():
         help='enable verbose mode')
     ap.add_argument('-d', action='store_true', required=False, 
         help='enable debug mode')
+    ap.add_argument('-s', '--scale', required=False, help='scale image slices')
     args = vars(ap.parse_args())
 
     # Grade test.
     grader = Grader()
-    return grader.grade(args['image'], args['v'], args['d'])
+    return grader.grade(args['image'], args['v'], args['d'], args['scale'])
 
 if (__name__ == '__main__'):
     main()

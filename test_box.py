@@ -8,7 +8,7 @@ import utils
 
 class TestBox:
 
-    def __init__(self, page, config, verbose_mode, debug_mode):
+    def __init__(self, page, config, verbose_mode, debug_mode, scale):
         '''
         Constructor for a new test box.
 
@@ -20,6 +20,7 @@ class TestBox:
                 otherwise.
             debug_mode (bool): True to run the program in debug mode, False 
                 otherwise.
+            scale (float): Factor to scale image slices by.
 
         Returns:
             TestBox: A newly created test box.
@@ -30,6 +31,7 @@ class TestBox:
         self.config = config
         self.verbose_mode = verbose_mode
         self.debug_mode = debug_mode
+        self.scale = scale
 
         # Configuration values.
         self.name = config['name']
@@ -367,11 +369,16 @@ class TestBox:
                 test image.
 
         '''
+        # Get coordinages of image slice.
         config = self.groups[group_num]
         (x_min, x_max, y_min, y_max) = self.get_image_coords(question_num, 
             group_num, config)
 
-        return box[int(y_min) : int(y_max), int(x_min) : int(x_max)]
+        # Crop image and scale.
+        im = box[int(y_min) : int(y_max), int(x_min) : int(x_max)]
+        im = cv.resize(im, None, fx=self.scale, fy=self.scale)
+
+        return im
 
     def add_image_slice(self, question_num, group_num, box):
         '''
