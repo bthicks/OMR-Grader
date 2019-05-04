@@ -48,6 +48,7 @@ $ pip3 install pyzbar
 * `-i`: path to image
 * `[-v]`: enable verbose mode - program will return image slices for every question
 * `[-d]`: enable debug mode - program will display image slices to screen
+* `[-s]`: factor to scale image slices by
 
 ## Acknowledgements
 * Adrian Rosebrock's tutorial "Bubble sheet multiple choice scanner and test grader using OMR, Python, OpenCV"
