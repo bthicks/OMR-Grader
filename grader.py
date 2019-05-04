@@ -44,7 +44,7 @@ class Grader:
                 # Verify that contour has four corners.
                 if (len(approx) == 4):
                     page = approx
-                    break 
+                    break
         else:
             return None
 
@@ -184,6 +184,12 @@ class Grader:
             'status' : 0,
             'error' : ''
         }
+
+        # Verify that the filepath leads to a .png
+        if not (image_name.endswith('.png')):
+            data['status'] = 1
+            data['error'] = 'File', image_name, 'must be of type .png'
+            return json.dump(data, sys.stdout)
 
         # Load image. 
         im = cv.imread(image_name)
