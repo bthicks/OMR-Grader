@@ -273,8 +273,8 @@ class Grader:
             data[box.name] = box.grade()
 
         # Output result as a JSON object to stdout.
-        json.dump(data, sys.stdout)
-        print()
+        #json.dump(data, sys.stdout)
+        #print()
 
         # For debugging.
         return json.dumps(data)

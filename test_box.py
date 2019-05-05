@@ -37,6 +37,7 @@ class TestBox:
         self.name = config['name']
         self.type = config['type']
         self.orientation = config['orientation']
+        self.multiple_responses = config['multiple_responses']
         self.x = config['x']
         self.y = config['y']
         self.rows = config['rows']
@@ -451,7 +452,9 @@ class TestBox:
         '''
         if (bubbled == ''):
             return '-'
-        if (self.type == 'number'):
+        elif (bubbled == '?'):
+            return '?'
+        elif (self.type == 'number'):
             return bubbled
         elif (self.type == 'letter'):
             return ''.join([chr(int(c) + 65) for c in bubbled])
@@ -488,11 +491,17 @@ class TestBox:
                 elif (percent_marked > 0.75):
                     unsure = True
                     self.handle_unsure_question(question_num, group_num, box)
-                    self.bubbled.append('?')
+                    bubbled = '?'
                     break
 
+        # If multiple responses found for a single response question, mark as
+        # unsure.
+        if (len(bubbled) > 1 and self.multiple_responses == False):
+            self.handle_unsure_question(question_num, group_num, box)
+            bubbled = '?'
+
         # Add image slice if program running in verbose mode and image slice not
-        # already added
+        # already added.
         if (self.verbose_mode and unsure == False):
             self.add_image_slice(question_num, group_num, box)
 

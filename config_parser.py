@@ -3,8 +3,8 @@ class Parser:
     config_keys = ['page_width', 'page_height', 'bubble_width', 'bubble_height', 
         'qr_x', 'qr_y', 'x_error', 'y_error', 'boxes']
 
-    box_keys = ['name', 'type', 'orientation', 'x', 'y', 'rows', 'columns', 
-        'groups']
+    box_keys = ['name', 'type', 'orientation', 'multiple_responses', 'x', 'y',
+        'rows', 'columns', 'groups']
 
     group_keys = ['x_min', 'x_max', 'y_min', 'y_max']
 
@@ -153,6 +153,19 @@ class Parser:
         if (value < 0):
             self.neg_float_error(key, value)
 
+    def parse_bool(self, key, value):
+        '''
+        Checks if a value is of type boolean. If not, sets error status and
+        message.
+
+        Args:
+            key (str): The key associated with the value being checked.
+            value (boolean): The value being checked.
+
+        '''
+        if not (isinstance(value, bool)):
+            self.type_error(key, 'boolean', type(value))
+
     def parse_box_orientation(self, orientation):
         '''
         Checks if the orientation is valid. If not, sets error status and
@@ -272,6 +285,8 @@ class Parser:
             self.parse_float(key, value)
         elif (key == 'rows' or key == 'columns'):
             self.parse_int(key, value)
+        elif (key == 'multiple_responses'):
+            self.parse_bool(key, value)
         elif (key == 'groups'):
             self.parse_groups(value)
 
