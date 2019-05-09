@@ -41,7 +41,7 @@ class Parser:
 
         '''
         self.status = 1
-        self.error = 'Key \'%s\' expected %s, found %s' % (key, want, got)
+        self.error = f'Key \'{key}\' expected {want}, found {got}'
 
     def unknown_key_error(self, key):
         '''
@@ -52,7 +52,7 @@ class Parser:
 
         '''
         self.status = 1
-        self.error = 'Unknown key \'%s\' in %s' % (key, self.fname)
+        self.error = f'Unknown key \'{key}\' in {self.fname}'
 
     def missing_key_error(self, key, dict_name):
         '''
@@ -64,7 +64,7 @@ class Parser:
 
         '''
         self.status = 1
-        self.error = 'Missing key \'%s\' in %s' % (key, dict_name)
+        self.error = f'Missing key \'{key}\' in {dict_name}'
 
     def unknown_value_error(self, key, value):
         '''
@@ -77,7 +77,7 @@ class Parser:
 
         '''
         self.status = 1
-        self.error = 'Unknown value \'%s\' for key \'%s\'' % (value, key)
+        self.error = f'Unknown value \'{value}\' for key \'{key}\''
 
     def neg_float_error(self, key, value):
         '''
@@ -89,8 +89,8 @@ class Parser:
 
         '''
         self.status = 1
-        self.error = ('Key \'%s\' must have a non-negative value. Found value ' 
-            '\'%s\'' % (key, value))
+        self.error = (f'Key \'{key}\' must have a non-negative value. Found '
+            f' value \'{value}\'')
 
     def non_pos_int_error(self, key, value):
         '''
@@ -103,8 +103,8 @@ class Parser:
 
         '''
         self.status = 1
-        self.error = ('Key \'%s\' must have a value greater than zero. Found '
-            'value \'%s\'' % (key, value))
+        self.error = (f'Key \'{key}\' must have a positive value. Found value '
+            f'\'{value}\'')
 
     def min_max_error(self, min_key, min_value, max_key, max_value):
         '''
@@ -119,8 +119,8 @@ class Parser:
 
         '''
         self.status = 1
-        self.error = ('Key \'%s\':\'%s\' must have a value less than or equal '
-            'to key \'%s\':\'%s\'' % (min_key, min_value, max_key, max_value))
+        self.error = (f'Key \'{min_key}\':\'{min_value}\' must have a value '
+            f'less than or equal to key \'{max_key}\':\'{max_value}\'')
 
     def parse_int(self, key, value):
         '''

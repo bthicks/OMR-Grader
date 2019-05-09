@@ -194,40 +194,40 @@ class Grader:
                 scale = float(scale)
             except ValueError:
                 data['status'] = 1
-                data['error'] = 'Scale', scale, 'must be of type float'
+                data['error'] = f'Scale {scale} must be of type float'
                 return json.dump(data, sys.stdout)
 
         # Verify that scale is positive.
         if (scale <= 0):
             data['status'] = 1
-            data['error'] = 'Scale', scale, 'must be positive'
+            data['error'] = f'Scale {scale} must be positive'
             return json.dump(data, sys.stdout)
 
         # Verify that the filepath leads to a .png
         if not (image_name.endswith('.png')):
             data['status'] = 1
-            data['error'] = 'File', image_name, 'must be of type .png'
+            data['error'] = f'File {image_name} must be of type .png'
             return json.dump(data, sys.stdout)
 
         # Load image. 
         im = cv.imread(image_name)
         if (im is None):
             data['status'] = 1
-            data['error'] = 'Image', image_name, 'not found'
+            data['error'] = f'Image {image_name} not found'
             return json.dump(data, sys.stdout);
 
         # Find test page within image.
         page = self.find_page(im)
         if (page is None):
             data['status'] = 1
-            data['error'] = 'Page not found in', image_name
+            data['error'] = f'Page not found in {image_name}'
             return json.dump(data, sys.stdout);   
 
         # Decode QR code, which will contain path to configuration file.
         qr_code = self.decode_qr(page)
         if (qr_code is None):
             data['status'] = 1
-            data['error'] = 'QR code not found'
+            data['error'] = f'QR code not found in {image_name}'
             return json.dump(data, sys.stdout);
         else:
             config_fname = qr_code.data.decode('utf-8')
@@ -242,7 +242,7 @@ class Grader:
                     object_pairs_hook=config_parser.duplicate_key_check)
         except FileNotFoundError:
             data['status'] = 1
-            data['error'] = 'Configuration file', qrData, 'not found'
+            data['error'] = f'Configuration file {qrData} not found'
             return json.dump(data, sys.stdout);   
 
         # Parse config file.
@@ -260,7 +260,7 @@ class Grader:
         page = self.upright_image(page, config)
         if (page is None):
             data['status'] = 1
-            data['error'] = 'Could not upright page in', image_name
+            data['error'] = f'Could not upright page in {image_name}'
             return json.dump(data, sys.stdout);
 
         # Grade each test box and add result to data.
