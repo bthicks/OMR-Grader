@@ -5,6 +5,7 @@ import cv2 as cv
 from imutils.perspective import four_point_transform
 import numpy as np
 
+
 def get_threshold(im):
     '''
     Performs a Gaussian blur and threshold on an image for image processing.
@@ -24,6 +25,7 @@ def get_threshold(im):
 
     return threshold
 
+
 def get_transform(contour, im):
     '''
     Returns the portion of an image bounded by a contour.
@@ -41,6 +43,7 @@ def get_transform(contour, im):
     approx = cv.approxPolyDP(contour, 0.02 * peri, True)
 
     return four_point_transform(im, approx.reshape(4, 2))
+
 
 def rotate_image(im, angle):
     '''
@@ -77,6 +80,7 @@ def rotate_image(im, angle):
     return cv.warpAffine(im, rot_mat, (int(math.ceil(nw)), 
         int(math.ceil(nh))), flags=cv.INTER_LANCZOS4)
 
+
 def encode_image(image):
     '''
     Encodes a .png image into a base64 string.
@@ -88,7 +92,7 @@ def encode_image(image):
         str: A base64 string encoding of the image.
 
     '''
-    if (image is None):
+    if image is None:
         return None
     else:
         _, binary = cv.imencode('.png', image)

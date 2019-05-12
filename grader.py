@@ -7,11 +7,11 @@ import re
 import cv2 as cv
 from imutils.perspective import four_point_transform
 import pyzbar.pyzbar as pyzbar
-import numpy as np
 
 import config_parser
 from test_box import TestBox
 import utils
+
 
 class Grader:
 
@@ -35,14 +35,14 @@ class Grader:
             cv.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key=cv.contourArea, reverse=True)
 
-        if (len(contours) > 0):
+        if len(contours) > 0:
             # Approximate the contour.
             for contour in contours:
                 peri = cv.arcLength(contour, True)
                 approx = cv.approxPolyDP(contour, 0.02 * peri, True)
 
                 # Verify that contour has four corners.
-                if (len(approx) == 4):
+                if len(approx) == 4:
                     page = approx
                     break
         else:
@@ -66,7 +66,7 @@ class Grader:
         _, new_page = cv.threshold(im, 127, 255, cv.THRESH_BINARY)
         decoded_objects = pyzbar.decode(new_page)
 
-        if (decoded_objects == []):
+        if not decoded_objects:
             return None
         else:
             return decoded_objects[0]
@@ -109,15 +109,14 @@ class Grader:
                 image.
 
         '''
-        if (self.image_is_upright(page, config)):
+        if self.image_is_upright(page, config):
             return page
         else:
             for _ in range(3):
                 page = utils.rotate_image(page, 90)
-                if (self.image_is_upright(page, config)):
+                if self.image_is_upright(page, config):
                     return page
         return None
-
 
     def scale_config_r(self, config, x_scale, y_scale, re_x, re_y):
         '''
@@ -141,9 +140,9 @@ class Grader:
             if isinstance(val, list):
                 for config in val:
                     self.scale_config_r(config, x_scale, y_scale, re_x, re_y)
-            if (re_x.search(key) or key == 'bubble_width'):
+            if re_x.search(key) or key == 'bubble_width':
                 config[key] = val * x_scale
-            elif (re_y.search(key) or key == 'bubble_height'):
+            elif re_y.search(key) or key == 'bubble_height':
                 config[key] = val * y_scale
 
     def scale_config(self, config, width, height):
@@ -187,7 +186,7 @@ class Grader:
         }
 
         # Cast str to float for scale.
-        if (scale is None):
+        if scale is None:
             scale = 1.0
         else:
             try:
@@ -198,7 +197,7 @@ class Grader:
                 return json.dump(data, sys.stdout)
 
         # Verify that scale is positive.
-        if (scale <= 0):
+        if scale <= 0:
             data['status'] = 1
             data['error'] = f'Scale {scale} must be positive'
             return json.dump(data, sys.stdout)
@@ -211,21 +210,21 @@ class Grader:
 
         # Load image. 
         im = cv.imread(image_name)
-        if (im is None):
+        if im is None:
             data['status'] = 1
             data['error'] = f'Image {image_name} not found'
             return json.dump(data, sys.stdout);
 
         # Find test page within image.
         page = self.find_page(im)
-        if (page is None):
+        if page is None:
             data['status'] = 1
             data['error'] = f'Page not found in {image_name}'
             return json.dump(data, sys.stdout);   
 
         # Decode QR code, which will contain path to configuration file.
         qr_code = self.decode_qr(page)
-        if (qr_code is None):
+        if qr_code is None:
             data['status'] = 1
             data['error'] = f'QR code not found in {image_name}'
             return json.dump(data, sys.stdout);
@@ -243,12 +242,12 @@ class Grader:
         except FileNotFoundError:
             data['status'] = 1
             data['error'] = f'Configuration file {qrData} not found'
-            return json.dump(data, sys.stdout);   
+            return json.dump(data, sys.stdout)
 
         # Parse config file.
         parser = config_parser.Parser(config, config_fname)
         status, error = parser.parse()
-        if (status == 1):
+        if status == 1:
             data['status'] = 1
             data['error'] = error
             return json.dump(data, sys.stdout)
@@ -258,7 +257,7 @@ class Grader:
 
         # Rotate page until upright.
         page = self.upright_image(page, config)
-        if (page is None):
+        if page is None:
             data['status'] = 1
             data['error'] = f'Could not upright page in {image_name}'
             return json.dump(data, sys.stdout);
@@ -278,6 +277,7 @@ class Grader:
 
         # For debugging.
         return json.dumps(data)
+
 
 def main():
     '''
@@ -299,5 +299,6 @@ def main():
     grader = Grader()
     return grader.grade(args['image'], args['v'], args['d'], args['scale'])
 
-if (__name__ == '__main__'):
+
+if __name__ == '__main__':
     main()

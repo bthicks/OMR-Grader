@@ -6,6 +6,7 @@ import numpy as np
 
 import utils
 
+
 class TestBox:
 
     def __init__(self, page, config, verbose_mode, debug_mode, scale):
@@ -49,9 +50,9 @@ class TestBox:
         self.y_error = config['y_error']
 
         # Set number of bubbles per question based on box orientation.
-        if (self.orientation == 'left-to-right'):
+        if self.orientation == 'left-to-right':
             self.bubbles_per_q = self.columns
-        elif (self.orientation == 'top-to-bottom'):
+        elif self.orientation == 'top-to-bottom':
             self.bubbles_per_q = self.rows
 
         # Return values.
@@ -152,7 +153,7 @@ class TestBox:
 
         # Check if contour is bubble; if it is, add to its appropriate group.
         for contour in contours:
-            if (self.is_bubble(contour)):
+            if self.is_bubble(contour):
                 group_num = self.get_bubble_group(contour)
                 bubbles[group_num].append(contour)
 
@@ -164,7 +165,7 @@ class TestBox:
             cv.CHAIN_APPROX_SIMPLE)
 
         for contour in contours:
-            if (self.is_bubble(contour)):
+            if self.is_bubble(contour):
                 return True
 
         return False
@@ -208,7 +209,7 @@ class TestBox:
 
         # Iterate through contours until the correct box is found.
         for contour in contours:
-            if (self.is_box(contour, threshold)):
+            if self.is_box(contour, threshold):
                 return utils.get_transform(contour, threshold)
 
         return None
@@ -224,9 +225,9 @@ class TestBox:
         '''
         questions = []
 
-        if (self.orientation == 'left-to-right'):
+        if self.orientation == 'left-to-right':
             num_questions = self.rows
-        elif (self.orientation == 'top-to-bottom'):
+        elif self.orientation == 'top-to-bottom':
             num_questions = self.columns
 
         for _ in range(num_questions):
@@ -246,13 +247,13 @@ class TestBox:
             float: The distance between questions in this bubble group.
 
         '''
-        if (self.orientation == 'left-to-right'):
-            if (self.rows == 1):
+        if self.orientation == 'left-to-right':
+            if self.rows == 1:
                 return 0
             else:
                 return (config['y_max'] - config['y_min']) / (self.rows - 1)
-        elif (self.orientation == 'top-to-bottom'):
-            if (self.columns == 1):
+        elif self.orientation == 'top-to-bottom':
+            if self.columns == 1:
                 return 0
             else:
                 return (config['x_max'] - config['x_min']) / (self.columns - 1)
@@ -269,9 +270,9 @@ class TestBox:
                 float: The starting point for this group of bubbles.
 
         '''
-        if (self.orientation == 'left-to-right'):
+        if self.orientation == 'left-to-right':
             return config['y_min'] - self.y
-        elif (self.orientation == 'top-to-bottom'):
+        elif self.orientation == 'top-to-bottom':
             return config['x_min'] - self.x
 
     def get_question_num(self, bubble, diff, offset):
@@ -288,14 +289,14 @@ class TestBox:
             int: The question number of this bubble.
 
         '''
-        if (diff == 0):
+        if diff == 0:
             return 0
 
         (x, y, _, _) = cv.boundingRect(bubble)
 
-        if (self.orientation == 'left-to-right'):
+        if self.orientation == 'left-to-right':
             return round((y - offset) / diff)
-        elif (self.orientation == 'top-to-bottom'):
+        elif self.orientation == 'top-to-bottom':
             return round((x - offset) / diff)     
 
     def group_by_question(self, bubbles, config):
@@ -313,7 +314,6 @@ class TestBox:
         questions = self.init_questions()
         diff = self.get_question_diff(config)
         offset = self.get_question_offset(config)
-        num_questions = len(questions)
 
         for bubble in bubbles:
             question_num = self.get_question_num(bubble, diff, offset)
@@ -341,20 +341,20 @@ class TestBox:
         diff = self.get_question_diff(config)
         offset = self.get_question_offset(config)
 
-        if (self.orientation == 'left-to-right'):
+        if self.orientation == 'left-to-right':
             question_num = question_num - (group_num * self.rows) - 1
             x_min = max(config['x_min'] - self.x - self.x_error, 0)
             x_max = config['x_max'] - self.x + self.x_error
             y_min = max((diff * question_num) + offset - (self.y_error / 2), 0)
             y_max = y_min + self.bubble_height + self.y_error
-        elif (self. orientation == 'top-to-bottom'):
+        elif self. orientation == 'top-to-bottom':
             question_num = question_num - (group_num * self.columns) - 1
             x_min = max((diff * question_num) + offset - (self.x_error / 2), 0)
             x_max = x_min + self.bubble_width + self.x_error
             y_min = max(config['y_min'] - self.y - self.y_error, 0)
             y_max = config['y_max'] - self.y + self.y_error
 
-        return (x_min, x_max, y_min, y_max)
+        return x_min, x_max, y_min, y_max
 
     def get_image_slice(self, question_num, group_num, box):
         '''
@@ -376,7 +376,7 @@ class TestBox:
             group_num, config)
 
         # Crop image and scale.
-        im = box[int(y_min) : int(y_max), int(x_min) : int(x_max)]
+        im = box[int(y_min): int(y_max), int(x_min): int(x_max)]
         im = cv.resize(im, None, fx=self.scale, fy=self.scale)
 
         return im
@@ -395,7 +395,7 @@ class TestBox:
         encoded_im = utils.encode_image(im)
 
         # Display image to screen if program runnning in debug mode.
-        if (self.debug_mode):
+        if self.debug_mode:
             cv.imshow('', im)
             cv.waitKey()
 
@@ -436,7 +436,7 @@ class TestBox:
         (x, y, w, h) = cv.boundingRect(bubble)
         area = math.pi * ((min(w, h) / 2) ** 2)
 
-        return (total / area)
+        return total / area
 
     def format_answer(self, bubbled):
         '''
@@ -450,13 +450,13 @@ class TestBox:
                 an unmarked answer.
 
         '''
-        if (bubbled == ''):
+        if bubbled == '':
             return '-'
-        elif (bubbled == '?'):
+        elif bubbled == '?':
             return '?'
-        elif (self.type == 'number'):
+        elif self.type == 'number':
             return bubbled
-        elif (self.type == 'letter'):
+        elif self.type == 'letter':
             return ''.join([chr(int(c) + 65) for c in bubbled])
 
     def grade_question(self, question, question_num, group_num, box):
@@ -475,7 +475,7 @@ class TestBox:
         unsure = False
 
         # If question is missing bubbles, mark as unsure.
-        if (len(question) != self.bubbles_per_q):
+        if len(question) != self.bubbles_per_q:
             unsure = True
             self.handle_unsure_question(question_num, group_num, box)
             self.bubbled.append('?')
@@ -485,10 +485,10 @@ class TestBox:
                 percent_marked = self.get_percent_marked(bubble, box)
 
                 # If ~50% bubbled, count as marked.
-                if (percent_marked > 0.8):
+                if percent_marked > 0.8:
                     bubbled += str(i)
                 # Count as unsure.
-                elif (percent_marked > 0.75):
+                elif percent_marked > 0.75:
                     unsure = True
                     self.handle_unsure_question(question_num, group_num, box)
                     bubbled = '?'
@@ -496,13 +496,13 @@ class TestBox:
 
         # If multiple responses found for a single response question, mark as
         # unsure.
-        if (len(bubbled) > 1 and self.multiple_responses == False):
+        if len(bubbled) > 1 and self.multiple_responses == False:
             self.handle_unsure_question(question_num, group_num, box)
             bubbled = '?'
 
         # Add image slice if program running in verbose mode and image slice not
         # already added.
-        if (self.verbose_mode and unsure == False):
+        if self.verbose_mode and unsure == False:
             self.add_image_slice(question_num, group_num, box)
 
         self.bubbled.append(self.format_answer(bubbled))
@@ -539,8 +539,8 @@ class TestBox:
         '''
         # Initialize dictionary to be returned.
         data = {
-            'status' : 0,
-            'error' : ''
+            'status': 0,
+            'error': ''
         }
 
         # Find box, find bubbles in box, then grade bubbles.
