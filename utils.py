@@ -7,7 +7,7 @@ import numpy as np
 
 
 def get_threshold(im):
-    '''
+    """
     Performs a Gaussian blur and threshold on an image for image processing.
     Returns the blurred and thresholded image.
 
@@ -18,7 +18,7 @@ def get_threshold(im):
         threshold (numpy.ndarray): An ndarray representing the blurred and
             thresholded image.
 
-    '''
+    """
     blurred = cv.GaussianBlur(im, (5, 5), 0)
     _, threshold = cv.threshold(blurred, 0, 255, cv.THRESH_BINARY_INV 
         | cv.THRESH_OTSU)
@@ -27,7 +27,7 @@ def get_threshold(im):
 
 
 def get_transform(contour, im):
-    '''
+    """
     Returns the portion of an image bounded by a contour.
 
     Args:
@@ -38,7 +38,7 @@ def get_transform(contour, im):
         numpy.ndarray: An ndarray representing the portion of the image bounded
             by the contour.
 
-    '''
+    """
     peri = cv.arcLength(contour, True)
     approx = cv.approxPolyDP(contour, 0.02 * peri, True)
 
@@ -46,7 +46,7 @@ def get_transform(contour, im):
 
 
 def rotate_image(im, angle):
-    '''
+    """
     Rotates an image by a specified angle.
 
     Args:
@@ -57,7 +57,7 @@ def rotate_image(im, angle):
     Returns:
         numpy.ndarray: An ndarray representing the rotated test image.
 
-    '''
+    """
     w = im.shape[1]
     h = im.shape[0]
     rads = np.deg2rad(angle)
@@ -82,7 +82,7 @@ def rotate_image(im, angle):
 
 
 def encode_image(image):
-    '''
+    """
     Encodes a .png image into a base64 string.
 
     Args:
@@ -91,7 +91,7 @@ def encode_image(image):
     Returns:
         str: A base64 string encoding of the image.
 
-    '''
+    """
     if image is None:
         return None
     else:

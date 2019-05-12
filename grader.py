@@ -16,7 +16,7 @@ import utils
 class Grader:
 
     def find_page(self, im):
-        '''
+        """
         Finds and returns the test box within a given image.
 
         Args:
@@ -25,7 +25,7 @@ class Grader:
         Returns:
             numpy.ndarray: An ndarray representing the test box in the image.
 
-        '''
+        """
         # Convert image to grayscale then blur to better detect contours.
         imgray = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
         threshold = utils.get_threshold(imgray)
@@ -52,7 +52,7 @@ class Grader:
         return four_point_transform(imgray, page.reshape(4, 2))
 
     def decode_qr(self, im): 
-        '''
+        """
         Finds and decodes the QR code inside of a test image.
 
         Args:
@@ -61,7 +61,7 @@ class Grader:
         Returns:
             pyzbar.Decoded: A decoded QR code object.
 
-        '''
+        """
         # Increase image contrast to better identify QR code.
         _, new_page = cv.threshold(im, 127, 255, cv.THRESH_BINARY)
         decoded_objects = pyzbar.decode(new_page)
@@ -72,7 +72,7 @@ class Grader:
             return decoded_objects[0]
 
     def image_is_upright(self, page, config):
-        '''
+        """
         Checks if an image is upright, based on the coordinates of the QR code
         in the image.
 
@@ -83,7 +83,7 @@ class Grader:
         Returns:
             bool: True if image is upright, False otherwise.
 
-        '''
+        """
         qr_code = self.decode_qr(page)
         qr_x = qr_code.rect.left
         qr_y = qr_code.rect.top
@@ -97,7 +97,7 @@ class Grader:
             return False
 
     def upright_image(self, page, config):
-        '''
+        """
         Rotates an image by 90 degree increments until it is upright.
 
         Args:
@@ -108,7 +108,7 @@ class Grader:
             page (numpy.ndarray): An ndarray representing the upright test 
                 image.
 
-        '''
+        """
         if self.image_is_upright(page, config):
             return page
         else:
@@ -119,7 +119,7 @@ class Grader:
         return None
 
     def scale_config_r(self, config, x_scale, y_scale, re_x, re_y):
-        '''
+        """
         Recursively scales lists within lists of values in the config dictionary 
         based on the width and height of the image being graded.  
 
@@ -135,7 +135,7 @@ class Grader:
             config (dict): A scaled coordinate mapping read from the 
                 configuration file. 
 
-        '''
+        """
         for key, val in config.items():
             if isinstance(val, list):
                 for config in val:
@@ -146,7 +146,7 @@ class Grader:
                 config[key] = val * y_scale
 
     def scale_config(self, config, width, height):
-        '''
+        """
         Scales the values in the config dictionary based on the width and height
         of the image being graded.
 
@@ -156,7 +156,7 @@ class Grader:
             width (int): Width of the actual test image.
             height (int): Height of the actual test image.
 
-        '''
+        """
         x_scale = width / config['page_width']
         y_scale = height / config['page_height']
 
@@ -167,7 +167,7 @@ class Grader:
         self.scale_config_r(config, x_scale, y_scale, re_x, re_y)
 
     def grade(self, image_name, verbose_mode, debug_mode, scale):
-        '''
+        """
         Grades a test image and outputs the result to stdout as a JSON object.
 
         Args:
@@ -178,7 +178,7 @@ class Grader:
                 otherwise.
             scale (str): Factor to scale image slices by.
 
-        '''
+        """
         # Initialize dictionary to be returned.
         data = {
             'status' : 0,
@@ -280,10 +280,10 @@ class Grader:
 
 
 def main():
-    '''
+    """
     Parses command line arguments and grades the specified test.
 
-    '''
+    """
     # Parse the arguments.
     ap = argparse.ArgumentParser()
     ap.add_argument('-i', '--image', required=True, 

@@ -10,7 +10,7 @@ import utils
 class TestBox:
 
     def __init__(self, page, config, verbose_mode, debug_mode, scale):
-        '''
+        """
         Constructor for a new test box.
 
         Args:
@@ -26,7 +26,7 @@ class TestBox:
         Returns:
             TestBox: A newly created test box.
 
-        '''
+        """
         # Args.
         self.page = page
         self.config = config
@@ -63,7 +63,7 @@ class TestBox:
         self.error = ''
 
     def get_bubble_group(self, bubble):
-        '''
+        """
         Finds and returns the group number that a bubble belongs to.
 
         Args:
@@ -73,7 +73,7 @@ class TestBox:
             int: The bubble's group number or -1 if the bubble does not belong
                 to a group.
 
-        '''
+        """
         (x, y, w, h) = cv.boundingRect(bubble)
 
         # Add offsets to get coordinates in relation to the whole test image 
@@ -91,7 +91,7 @@ class TestBox:
         return -1
 
     def is_bubble(self, contour):
-        '''
+        """
         Checks if a contour is of sufficient width and height, is somewhat
         circular, and is within the correct coordinates, with margins for error,
         to be counted as a bubble.
@@ -103,7 +103,7 @@ class TestBox:
         Returns:
             bool: True if contour is counted as a bubble, False otherwise.
 
-        '''
+        """
         (x, y, w, h) = cv.boundingRect(contour)
         aspect_ratio = w / float(h)
 
@@ -131,7 +131,7 @@ class TestBox:
         return False
 
     def get_bubbles(self, box):
-        '''
+        """
         Finds and return bubbles within the test box.
 
         Args:
@@ -141,7 +141,7 @@ class TestBox:
             bubbles (list): A list of lists, where each list is a group of 
                 bubble contours.
 
-        '''
+        """
         # Find bubbles in box.
         _, contours, _ = cv.findContours(box, cv.RETR_EXTERNAL, 
             cv.CHAIN_APPROX_SIMPLE)
@@ -171,7 +171,7 @@ class TestBox:
         return False
 
     def is_box(self, contour, threshold):
-        '''
+        """
         Checks if x and y coordinates of a contour match the x and y coordinates
         of this test box, with margins for error.
 
@@ -182,7 +182,7 @@ class TestBox:
         Returns:
             bool: True for success, False otherwise.
 
-        '''
+        """
         (x, y, _, _) = cv.boundingRect(contour)
 
         if ((self.x - self.x_error <= x <= self.x + self.x_error) and 
@@ -193,14 +193,14 @@ class TestBox:
             return False
 
     def get_box(self):
-        '''
+        """
         Finds and returns the contour for this test answer box.
 
         Returns:
             numpy.ndarray: An ndarray representing the answer box in
                 the test image.
 
-        '''
+        """
         # Blur and threshold the page, then find boxes within the page.
         threshold = utils.get_threshold(self.page)
         _, contours, _ = cv.findContours(threshold, cv.RETR_TREE, 
@@ -215,14 +215,14 @@ class TestBox:
         return None
 
     def init_questions(self):
-        '''
+        """
         Initialize and return a list of empty lists based on the number of
         questions in a group.
 
         Returns:
             questions (list): A list of empty lists.
 
-        '''
+        """
         questions = []
 
         if self.orientation == 'left-to-right':
@@ -236,7 +236,7 @@ class TestBox:
         return questions
 
     def get_question_diff(self, config):
-        '''
+        """
         Finds and returns the distance between each question.
 
         Args:
@@ -246,7 +246,7 @@ class TestBox:
         Returns:
             float: The distance between questions in this bubble group.
 
-        '''
+        """
         if self.orientation == 'left-to-right':
             if self.rows == 1:
                 return 0
@@ -259,7 +259,7 @@ class TestBox:
                 return (config['x_max'] - config['x_min']) / (self.columns - 1)
 
     def get_question_offset(self, config):
-        '''
+        """
         Returns the starting point for this group of bubbles.
 
         Args:
@@ -269,14 +269,14 @@ class TestBox:
             Returns:
                 float: The starting point for this group of bubbles.
 
-        '''
+        """
         if self.orientation == 'left-to-right':
             return config['y_min'] - self.y
         elif self.orientation == 'top-to-bottom':
             return config['x_min'] - self.x
 
     def get_question_num(self, bubble, diff, offset):
-        '''
+        """
         Finds and returns the question number of a bubble based on its 
         coordinates.
 
@@ -288,7 +288,7 @@ class TestBox:
         Returns:
             int: The question number of this bubble.
 
-        '''
+        """
         if diff == 0:
             return 0
 
@@ -300,7 +300,7 @@ class TestBox:
             return round((x - offset) / diff)     
 
     def group_by_question(self, bubbles, config):
-        '''
+        """
         Groups a list of bubbles by question.
 
         Args:
@@ -310,7 +310,7 @@ class TestBox:
             questions (list): A list of lists, where each list contains the 
                 bubble contours for a question.
 
-        '''
+        """
         questions = self.init_questions()
         diff = self.get_question_diff(config)
         offset = self.get_question_offset(config)
@@ -322,7 +322,7 @@ class TestBox:
         return questions
 
     def get_image_coords(self, question_num, group_num, config):
-        '''
+        """
         Finds and returns the coordinates of a question in the test image.
 
         Args:
@@ -337,7 +337,7 @@ class TestBox:
             y_min (float): Minimum y coordinate.
             y_max (float): Maximum y coordinate.
 
-        '''
+        """
         diff = self.get_question_diff(config)
         offset = self.get_question_offset(config)
 
@@ -357,7 +357,7 @@ class TestBox:
         return x_min, x_max, y_min, y_max
 
     def get_image_slice(self, question_num, group_num, box):
-        '''
+        """
         Crops and returns an image slice for the unsure question.
 
         Args:
@@ -369,7 +369,7 @@ class TestBox:
             numpy.ndarray: An ndarray representing the specified question in the
                 test image.
 
-        '''
+        """
         # Get coordinages of image slice.
         config = self.groups[group_num]
         (x_min, x_max, y_min, y_max) = self.get_image_coords(question_num, 
@@ -382,7 +382,7 @@ class TestBox:
         return im
 
     def add_image_slice(self, question_num, group_num, box):
-        '''
+        """
         Adds the image slice for the question to the list of images.
 
         Args:
@@ -390,7 +390,7 @@ class TestBox:
             group_num (int): The question's group number.
             box (numpy.ndarray): An ndarray representing the test box image.
 
-        '''
+        """
         im = self.get_image_slice(question_num, group_num, box)
         encoded_im = utils.encode_image(im)
 
@@ -402,7 +402,7 @@ class TestBox:
         self.images.append(encoded_im)
 
     def handle_unsure_question(self, question_num, group_num, box):
-        '''
+        """
         Adds the image slice for the question to the list of images. Adds the
         question to the list of unsure questions.
 
@@ -411,12 +411,12 @@ class TestBox:
             group_num (int): The question's group number.
             box (numpy.ndarray): An ndarray representing the test box image.
 
-        '''
+        """
         self.add_image_slice(question_num, group_num, box)
         self.unsure.append(question_num)
 
     def get_percent_marked(self, bubble, box):
-        '''
+        """
         Calculates the percentage of darkened pixels in the bubble contour.
 
         Args:
@@ -426,7 +426,7 @@ class TestBox:
         Returns:
             float: The percentage of darkened pixels in the bubble contour.
 
-        '''
+        """
         # Applies a mask to the entire test box image to only look at one
         # bubble, then counts the number of nonzero pixels in the bubble.
         mask = np.zeros(box.shape, dtype='uint8')
@@ -439,7 +439,7 @@ class TestBox:
         return total / area
 
     def format_answer(self, bubbled):
-        '''
+        """
         Formats the answer for this question (string of letters or numbers).
 
         Args:
@@ -449,7 +449,7 @@ class TestBox:
             str: A formatted string representing the graded answer, or '-' for
                 an unmarked answer.
 
-        '''
+        """
         if bubbled == '':
             return '-'
         elif bubbled == '?':
@@ -460,7 +460,7 @@ class TestBox:
             return ''.join([chr(int(c) + 65) for c in bubbled])
 
     def grade_question(self, question, question_num, group_num, box):
-        '''
+        """
         Grades a question and adds the result to the 'bubbled' list.
 
         Args:
@@ -470,7 +470,7 @@ class TestBox:
             group_num (int): The question's group number.
             box (numpy.ndarray): An ndarray representing the test box image.
 
-        '''
+        """
         bubbled = ''
         unsure = False
 
@@ -508,7 +508,7 @@ class TestBox:
         self.bubbled.append(self.format_answer(bubbled))
 
     def grade_bubbles(self, bubbles, box):
-        '''
+        """
         Grades a list of bubbles from the test box.
 
         Args:
@@ -516,7 +516,7 @@ class TestBox:
                 bubble contours.
             box (numpy.ndarray): An ndarray representing the test box.
 
-        '''
+        """
         for (i, group) in enumerate(bubbles):
             # Split a group of bubbles by question.
             group = self.group_by_question(group, self.groups[i])
@@ -530,13 +530,13 @@ class TestBox:
                 self.grade_question(question, question_num, i, box)
 
     def grade(self):
-        '''
+        """
         Finds and grades a test box within a test image.
 
         Returns:
             data (dict): A dictionary containing info about the graded test box.
 
-        '''
+        """
         # Initialize dictionary to be returned.
         data = {
             'status': 0,
