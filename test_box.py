@@ -143,7 +143,7 @@ class TestBox:
 
         """
         # Find bubbles in box.
-        _, contours, _ = cv.findContours(box, cv.RETR_EXTERNAL, 
+        contours, _ = cv.findContours(box, cv.RETR_EXTERNAL, 
             cv.CHAIN_APPROX_SIMPLE)
 
         # Init empty list for each group of bubbles.
@@ -161,7 +161,7 @@ class TestBox:
 
     def box_contains_bubbles(self, box, threshold):
         im = utils.get_transform(box, threshold)
-        _, contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, 
+        contours, _ = cv.findContours(im, cv.RETR_EXTERNAL, 
             cv.CHAIN_APPROX_SIMPLE)
 
         for contour in contours:
@@ -203,7 +203,7 @@ class TestBox:
         """
         # Blur and threshold the page, then find boxes within the page.
         threshold = utils.get_threshold(self.page)
-        _, contours, _ = cv.findContours(threshold, cv.RETR_TREE, 
+        contours, _ = cv.findContours(threshold, cv.RETR_TREE, 
             cv.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key=cv.contourArea, reverse=True)
 

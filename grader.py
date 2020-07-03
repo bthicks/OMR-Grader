@@ -31,7 +31,7 @@ class Grader:
         threshold = utils.get_threshold(imgray)
 
         # Find contour for entire page. 
-        _, contours, _ = cv.findContours(threshold, cv.RETR_EXTERNAL, 
+        contours, _ = cv.findContours(threshold, cv.RETR_EXTERNAL, 
             cv.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key=cv.contourArea, reverse=True)
 
